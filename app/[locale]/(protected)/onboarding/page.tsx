@@ -205,8 +205,11 @@ export default function OnboardingPage() {
                     </div>
                   </div>
                 )}
-                <div className="pt-4 flex gap-3">
-                  <Button onClick={() => router.push("/dashboard")}>
+                <div className="pt-4 flex gap-3 flex-wrap">
+                  <Button onClick={() => router.push("/simulation")} size="lg" className="flex-1 min-w-[200px]">
+                    Continua con la Simulazione →
+                  </Button>
+                  <Button onClick={() => router.push("/dashboard")} variant="outline">
                     Go to Dashboard
                   </Button>
                   <Button
