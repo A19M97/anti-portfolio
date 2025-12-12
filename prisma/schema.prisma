@@ -11,12 +11,46 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String            @id @default(cuid())
+  clerkId         String            @unique
+  email           String            @unique
+  name            String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  profileAnalysis ProfileAnalysis[]
 
   @@map("users")
+}
+
+model ProfileAnalysis {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Analyzed data from LLM
+  role              String?
+  seniority         String?
+  sectors           String[] // Array of sectors
+  skills            Json?    // Array of skills/technologies
+  workExperiences   Json?    // Array of work experiences
+  education         Json?    // Array of education entries
+  personalProjects  Json?    // Array of personal projects
+  additionalData    Json?    // Flexible field for future additions
+
+  // Raw LLM response (complete JSON from Claude)
+  rawAnalysis       Json?    // Complete raw JSON response from Claude
+  claudeResponse    String?  @db.Text // Raw text response before parsing
+
+  // Original data
+  uploadedFiles     String[] // Paths to uploaded files
+  freeText          String?  @db.Text
+
+  // Metadata
+  analysisStatus    String   @default("pending") // pending, processing, completed, failed
+  errorMessage      String?  @db.Text
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("profile_analyses")
+  @@index([userId])
 }
