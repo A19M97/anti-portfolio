@@ -1,0 +1,75 @@
+{
+  "HomePage": {
+    "appName": "MyApp",
+    "title": "Boilerplate Full-Stack Next.js 15",
+    "description": "Starter pronto per la produzione con Clerk Auth, Prisma, PostgreSQL e shadcn/ui. Tutto ciò di cui hai bisogno per costruire la tua prossima applicazione SaaS.",
+    "signIn": "Accedi",
+    "signUp": "Inizia",
+    "dashboard": "Dashboard",
+    "goToDashboard": "Vai alla Dashboard",
+    "startBuilding": "Inizia a Costruire",
+    "footer": "Costruito con Next.js 15, Clerk, Prisma e shadcn/ui"
+  },
+  "Features": {
+    "authentication": {
+      "title": "Autenticazione Sicura",
+      "description": "Autenticazione Email OTP powered by Clerk con gestione delle sessioni",
+      "features": {
+        "emailLinks": "Link magici via email",
+        "protectedRoutes": "Route protette",
+        "webhooks": "Webhook utente"
+      }
+    },
+    "database": {
+      "title": "Database Pronto",
+      "description": "PostgreSQL con Prisma ORM per query type-safe del database",
+      "features": {
+        "docker": "Setup Docker Compose",
+        "migrations": "Sistema di migrazioni",
+        "typesSafe": "Query type-safe"
+      }
+    },
+    "ui": {
+      "title": "UI Moderna",
+      "description": "Componenti eleganti con shadcn/ui, Tailwind CSS e modalità scura",
+      "features": {
+        "accessible": "Componenti accessibili",
+        "validation": "Validazione form",
+        "responsive": "Design responsive"
+      }
+    }
+  },
+  "Dashboard": {
+    "welcomeBack": "Bentornato, {name}!",
+    "stats": {
+      "totalItems": "Elementi Totali",
+      "activeUsers": "Utenti Attivi",
+      "weeklyActivity": "Attività Settimanale",
+      "growthRate": "Tasso di Crescita",
+      "sampleMetric": "Metrica di esempio",
+      "fromLastMonth": "+12% dal mese scorso",
+      "fromLastWeek": "+7 dalla settimana scorsa",
+      "growthFromLastMonth": "+2,5% dal mese scorso"
+    },
+    "tabs": {
+      "overview": "Panoramica",
+      "profileSettings": "Impostazioni Profilo"
+    },
+    "overview": {
+      "title": "Panoramica Dashboard",
+      "description": "L'attività del tuo account e gli aggiornamenti recenti",
+      "accountCreated": "Account creato",
+      "active": "Attivo",
+      "quickActions": {
+        "title": "Azioni Rapide",
+        "createItem": "Crea Elemento",
+        "viewStats": "Visualizza Statistiche",
+        "settings": "Impostazioni"
+      }
+    },
+    "profile": {
+      "title": "Impostazioni Profilo",
+      "description": "Aggiorna le informazioni del tuo profilo"
+    }
+  }
+}

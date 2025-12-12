@@ -1,0 +1,75 @@
+{
+  "HomePage": {
+    "appName": "MyApp",
+    "title": "Next.js 15 Full-Stack Boilerplate",
+    "description": "Production-ready starter with Clerk Auth, Prisma, PostgreSQL, and shadcn/ui. Everything you need to build your next SaaS application.",
+    "signIn": "Sign In",
+    "signUp": "Get Started",
+    "dashboard": "Dashboard",
+    "goToDashboard": "Go to Dashboard",
+    "startBuilding": "Start Building",
+    "footer": "Built with Next.js 15, Clerk, Prisma, and shadcn/ui"
+  },
+  "Features": {
+    "authentication": {
+      "title": "Secure Authentication",
+      "description": "Email OTP authentication powered by Clerk with session management",
+      "features": {
+        "emailLinks": "Email magic links",
+        "protectedRoutes": "Protected routes",
+        "webhooks": "User webhooks"
+      }
+    },
+    "database": {
+      "title": "Database Ready",
+      "description": "PostgreSQL with Prisma ORM for type-safe database queries",
+      "features": {
+        "docker": "Docker Compose setup",
+        "migrations": "Migrations system",
+        "typesSafe": "Type-safe queries"
+      }
+    },
+    "ui": {
+      "title": "Modern UI",
+      "description": "Beautiful components with shadcn/ui, Tailwind CSS and dark mode",
+      "features": {
+        "accessible": "Accessible components",
+        "validation": "Form validation",
+        "responsive": "Responsive design"
+      }
+    }
+  },
+  "Dashboard": {
+    "welcomeBack": "Welcome back, {name}!",
+    "stats": {
+      "totalItems": "Total Items",
+      "activeUsers": "Active Users",
+      "weeklyActivity": "Weekly Activity",
+      "growthRate": "Growth Rate",
+      "sampleMetric": "Sample metric",
+      "fromLastMonth": "+12% from last month",
+      "fromLastWeek": "+7 from last week",
+      "growthFromLastMonth": "+2.5% from last month"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "profileSettings": "Profile Settings"
+    },
+    "overview": {
+      "title": "Dashboard Overview",
+      "description": "Your account activity and recent updates",
+      "accountCreated": "Account created",
+      "active": "Active",
+      "quickActions": {
+        "title": "Quick Actions",
+        "createItem": "Create Item",
+        "viewStats": "View Stats",
+        "settings": "Settings"
+      }
+    },
+    "profile": {
+      "title": "Profile Settings",
+      "description": "Update your profile information"
+    }
+  }
+}
