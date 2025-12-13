@@ -20,12 +20,9 @@ export default async function DashboardPage() {
       clerkId: true,
       name: true,
       email: true,
-      _count: {
-        select: {
-          simulations: {
-            where: { status: "completed" }
-          }
-        }
+      simulations: {
+        where: { status: "completed" },
+        select: { id: true }
       }
     },
     orderBy: { createdAt: "desc" }
@@ -42,7 +39,7 @@ export default async function DashboardPage() {
       firstName,
       lastName,
       fullName: user.name || t('namelessUser'),
-      completedSimulationsCount: user._count.simulations
+      completedSimulationsCount: user.simulations.length
     };
   })
 
