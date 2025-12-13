@@ -1,17 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import {
-  saveUploadedFile,
-  readFileForClaude,
-  deleteUploadedFiles,
-} from "@/lib/file-processing";
 import { analyzeProfileWithClaude } from "@/lib/anthropic";
-import {
-  ALLOWED_FILE_TYPES,
-  MAX_FILE_SIZE,
-  MAX_FILES,
-} from "@/lib/validations/profile-analysis";
 import { loggers } from "@/lib/logger";
 import { getDefaultClaudeModel } from "@/lib/settings";
 
@@ -47,25 +37,15 @@ export async function POST(req: Request) {
 
     // Parse form data
     const formData = await req.formData();
-    const files = formData.getAll("files") as File[];
-    const freeText = formData.get("freeText") as string | null;
     const desiredRole = formData.get("desiredRole") as string | null;
 
     // Get the default Claude model from app settings
     const model = await getDefaultClaudeModel();
 
     logger.info("Form data parsed", {
-      filesCount: files.length,
-      hasFreeText: !!freeText,
-      freeTextLength: freeText?.length || 0,
       hasDesiredRole: !!desiredRole,
       desiredRole,
       model,
-      fileDetails: files.map((f) => ({
-        name: f.name,
-        size: f.size,
-        type: f.type,
-      })),
     });
 
     // Validate that desired role is provided
@@ -77,44 +57,12 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate files
-    logger.debug("Validating files");
-
-    if (files.length > MAX_FILES) {
-      logger.warn("Too many files uploaded", { filesCount: files.length, maxFiles: MAX_FILES });
-      return NextResponse.json(
-        { error: `Maximum ${MAX_FILES} files allowed` },
-        { status: 400 }
-      );
-    }
-
-    for (const file of files) {
-      if (file.size > MAX_FILE_SIZE) {
-        logger.warn("File too large", { fileName: file.name, size: file.size, maxSize: MAX_FILE_SIZE });
-        return NextResponse.json(
-          { error: `File ${file.name} exceeds maximum size of 10MB` },
-          { status: 400 }
-        );
-      }
-
-      if (!ALLOWED_FILE_TYPES.includes(file.type as any)) {
-        logger.warn("Invalid file type", { fileName: file.name, type: file.type, allowedTypes: ALLOWED_FILE_TYPES });
-        return NextResponse.json(
-          { error: `File type ${file.type} not allowed` },
-          { status: 400 }
-        );
-      }
-    }
-
-    logger.info("Files validated successfully");
-
     // Create initial profile analysis record
     logger.debug("Creating profile analysis record in database");
 
     const profileAnalysis = await db.profileAnalysis.create({
       data: {
         userId: user.id,
-        freeText: freeText || undefined,
         uploadedFiles: [],
         analysisStatus: "processing",
       },
@@ -122,29 +70,7 @@ export async function POST(req: Request) {
 
     logger.info("Profile analysis record created", { profileAnalysisId: profileAnalysis.id });
 
-    let uploadedFilePaths: string[] = [];
-
     try {
-      // Save uploaded files (but we won't use them for analysis)
-      logger.info("Processing uploaded files", { filesCount: files.length });
-
-      for (const file of files) {
-        const filepath = await saveUploadedFile(file, user.id);
-        uploadedFilePaths.push(filepath);
-      }
-
-      logger.info("All files processed", {
-        uploadedCount: uploadedFilePaths.length,
-      });
-
-      // Update with uploaded file paths
-      logger.debug("Updating profile analysis with file paths");
-
-      await db.profileAnalysis.update({
-        where: { id: profileAnalysis.id },
-        data: { uploadedFiles: uploadedFilePaths },
-      });
-
       // Analyze with Claude using ONLY the desired role
       logger.info("Starting Claude analysis using desired role only", {
         desiredRole: desiredRole.trim(),
@@ -218,7 +144,6 @@ export async function POST(req: Request) {
       logger.error("Profile analysis failed", error, {
         profileAnalysisId: profileAnalysis.id,
         userId: user.id,
-        uploadedFilesCount: uploadedFilePaths.length,
       });
 
       // Update status to failed
@@ -231,14 +156,6 @@ export async function POST(req: Request) {
           errorMessage: error instanceof Error ? error.message : "Unknown error",
         },
       });
-
-      // Clean up uploaded files on error
-      if (uploadedFilePaths.length > 0) {
-        logger.info("Cleaning up uploaded files after error", {
-          filesCount: uploadedFilePaths.length,
-        });
-        await deleteUploadedFiles(uploadedFilePaths);
-      }
 
       throw error;
     }
