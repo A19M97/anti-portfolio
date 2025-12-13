@@ -6,7 +6,7 @@ import {
   readFileForClaude,
   deleteUploadedFiles,
 } from "@/lib/file-processing";
-import { analyzeProfileWithClaude, type DocumentFile } from "@/lib/anthropic";
+import { analyzeProfileWithClaude } from "@/lib/anthropic";
 import {
   ALLOWED_FILE_TYPES,
   MAX_FILE_SIZE,
@@ -49,6 +49,7 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const files = formData.getAll("files") as File[];
     const freeText = formData.get("freeText") as string | null;
+    const desiredRole = formData.get("desiredRole") as string | null;
 
     // Get the default Claude model from app settings
     const model = await getDefaultClaudeModel();
@@ -57,6 +58,8 @@ export async function POST(req: Request) {
       filesCount: files.length,
       hasFreeText: !!freeText,
       freeTextLength: freeText?.length || 0,
+      hasDesiredRole: !!desiredRole,
+      desiredRole,
       model,
       fileDetails: files.map((f) => ({
         name: f.name,
@@ -64,6 +67,15 @@ export async function POST(req: Request) {
         type: f.type,
       })),
     });
+
+    // Validate that desired role is provided
+    if (!desiredRole || !desiredRole.trim()) {
+      logger.warn("No desired role provided");
+      return NextResponse.json(
+        { error: "Desired role is required" },
+        { status: 400 }
+      );
+    }
 
     // Validate files
     logger.debug("Validating files");
@@ -111,24 +123,18 @@ export async function POST(req: Request) {
     logger.info("Profile analysis record created", { profileAnalysisId: profileAnalysis.id });
 
     let uploadedFilePaths: string[] = [];
-    let documents: DocumentFile[] = [];
 
     try {
-      // Save uploaded files and prepare for Claude
+      // Save uploaded files (but we won't use them for analysis)
       logger.info("Processing uploaded files", { filesCount: files.length });
 
       for (const file of files) {
         const filepath = await saveUploadedFile(file, user.id);
         uploadedFilePaths.push(filepath);
-
-        // Read file for Claude API
-        const fileData = await readFileForClaude(filepath, file.type);
-        documents.push(fileData);
       }
 
       logger.info("All files processed", {
         uploadedCount: uploadedFilePaths.length,
-        documentsCount: documents.length,
       });
 
       // Update with uploaded file paths
@@ -139,12 +145,13 @@ export async function POST(req: Request) {
         data: { uploadedFiles: uploadedFilePaths },
       });
 
-      // Analyze with Claude
-      logger.info("Starting Claude analysis");
+      // Analyze with Claude using ONLY the desired role
+      logger.info("Starting Claude analysis using desired role only", {
+        desiredRole: desiredRole.trim(),
+      });
 
       const result = await analyzeProfileWithClaude({
-        documents,
-        freeText: freeText || undefined,
+        desiredRole: desiredRole.trim(),
         model: model as any,
       });
 
@@ -176,6 +183,7 @@ export async function POST(req: Request) {
             summary: analysis.summary,
             prompt, // Include the prompt in additional data
             model: usedModel, // Include the model used
+            desiredRole: desiredRole.trim(), // Include desired role
           } as any,
           // Save complete raw JSON data from Claude
           rawAnalysis: rawAnalysis as any,

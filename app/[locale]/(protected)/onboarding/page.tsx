@@ -5,12 +5,14 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, AlertCircle, FileText, MessageSquare, Code } from "lucide-react";
+import { Loader2, CheckCircle2, AlertCircle, FileText, MessageSquare, Code, Briefcase } from "lucide-react";
 import { toast } from "sonner";
+import AntiPortfolioDestruction from "@/components/AntiPortfolioDestruction";
 
 type AnalysisStatus = "idle" | "uploading" | "analyzing" | "success" | "error";
 
@@ -19,6 +21,7 @@ export default function OnboardingPage() {
   const t = useTranslations("Onboarding");
   const [files, setFiles] = useState<File[]>([]);
   const [freeText, setFreeText] = useState("");
+  const [desiredRole, setDesiredRole] = useState("");
   const [status, setStatus] = useState<AnalysisStatus>("idle");
   const [error, setError] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
@@ -26,6 +29,8 @@ export default function OnboardingPage() {
   const [usedModel, setUsedModel] = useState<string | null>(null);
   const [rawAnalysis, setRawAnalysis] = useState<any>(null);
   const [claudeResponse, setClaudeResponse] = useState<string | null>(null);
+  const [showDestruction, setShowDestruction] = useState(false);
+  const [isAnimationComplete, setIsAnimationComplete] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,19 +39,24 @@ export default function OnboardingPage() {
     setError(null);
     setStatus("uploading");
 
+    // Start visual destruction immediately
+    setShowDestruction(true);
+
     const startTime = Date.now();
 
     try {
-      // Validate that at least one input is provided
+      // Validate that desired role is provided
       console.log("[Frontend] Validating input", {
         filesCount: files.length,
         hasFreeText: !!freeText.trim(),
+        hasDesiredRole: !!desiredRole.trim(),
       });
 
-      if (files.length === 0 && !freeText.trim()) {
-        console.warn("[Frontend] Validation failed: no input provided");
-        setError(t("errors.noInput"));
+      if (!desiredRole.trim()) {
+        console.warn("[Frontend] Validation failed: no desired role provided");
+        setError(t("errors.noRole"));
         setStatus("error");
+        setShowDestruction(false); // Cancel destruction if validation fails
         return;
       }
 
@@ -70,8 +80,15 @@ export default function OnboardingPage() {
         formData.append("freeText", freeText);
       }
 
+      if (desiredRole.trim()) {
+        console.log("[Frontend] Adding desired role", {
+          role: desiredRole,
+        });
+        formData.append("desiredRole", desiredRole);
+      }
+
       setStatus("analyzing");
-      toast.info(t("toasts.analyzing"));
+      // toast.info(t("toasts.analyzing")); // Suppress toast as we have the visual animation
 
       // Send to API
       console.log("[Frontend] Sending request to API");
@@ -116,7 +133,7 @@ export default function OnboardingPage() {
         totalDurationMs: totalDuration,
       });
 
-      toast.success(t("toasts.success"));
+      // toast.success(t("toasts.success")); // Will show results instead
     } catch (err) {
       const totalDuration = Date.now() - startTime;
       console.error("[Frontend] Analysis failed", {
@@ -127,23 +144,40 @@ export default function OnboardingPage() {
       setError(err instanceof Error ? err.message : t("errors.analysisFailed"));
       setStatus("error");
       toast.error(t("toasts.error"));
+      // Maybe keep destruction visible or show error state?
+      // For now, let user retry.
+      setShowDestruction(false);
     }
   };
 
+  const handleAnimationComplete = () => {
+    setIsAnimationComplete(true);
+  };
+
   const isLoading = status === "uploading" || status === "analyzing";
-  const canSubmit = !isLoading && (files.length > 0 || freeText.trim().length > 0);
+  const canSubmit = !isLoading && desiredRole.trim().length > 0;
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            {t("subtitle")}
-          </p>
-        </div>
+  // If destruction is active and animation isn't "complete" (modal dismissed)
+  if (showDestruction && !isAnimationComplete) {
+    // If API failed, we might want to exit this view? 
+    // Handled by setStatus('error') -> setShowDestruction(false) in catch block.
+    return (
+      <AntiPortfolioDestruction
+        file={files[0]}
+        onComplete={handleAnimationComplete}
+        autoStart={true}
+      />
+    );
+  }
 
-        {status === "success" && analysisResult ? (
+  // If analysis success AND animation passed -> Show Results
+  if (status === "success" && analysisResult && isAnimationComplete) {
+    // ... render success view ...
+    // (Copying expected success rendering block below)
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Result Cards Block */}
           <div className="space-y-6">
             <Card className="border-green-200 dark:border-green-800">
               <CardHeader>
@@ -200,7 +234,10 @@ export default function OnboardingPage() {
                       setClaudeResponse(null);
                       setFiles([]);
                       setFreeText("");
+                      setDesiredRole("");
                       setUsedModel(null);
+                      setShowDestruction(false);
+                      setIsAnimationComplete(false);
                     }}
                   >
                     {t("success.analyzeAnother")}
@@ -208,7 +245,7 @@ export default function OnboardingPage() {
                 </div>
               </CardContent>
             </Card>
-
+            {/* Debug Cards ... */}
             {prompt && (
               <Card>
                 <CardHeader>
@@ -216,9 +253,6 @@ export default function OnboardingPage() {
                     <Code className="h-5 w-5" />
                     <CardTitle>{t("debug.promptTitle")}</CardTitle>
                   </div>
-                  <CardDescription>
-                    {t("debug.promptDescription")}
-                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-md overflow-x-auto">
@@ -274,96 +308,122 @@ export default function OnboardingPage() {
               </Card>
             )}
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center space-x-2">
-                  <FileText className="h-5 w-5" />
-                  <CardTitle>{t("uploadDocuments.title")}</CardTitle>
-                </div>
-                <CardDescription>
-                  {t("uploadDocuments.description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <FileUpload onFilesChange={setFiles} />
-              </CardContent>
-            </Card>
+        </div>
+      </div>
+    );
+  }
 
-            <Card>
-              <CardHeader>
-                <div className="flex items-center space-x-2">
-                  <MessageSquare className="h-5 w-5" />
-                  <CardTitle>{t("additionalInfo.title")}</CardTitle>
-                </div>
-                <CardDescription>
-                  {t("additionalInfo.description")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Textarea
-                  placeholder={t("additionalInfo.placeholder")}
-                  value={freeText}
-                  onChange={(e) => setFreeText(e.target.value)}
-                  rows={8}
-                  className="resize-none"
-                />
-                <p className="text-sm text-gray-500 mt-2">
-                  {freeText.length} {t("additionalInfo.characters")}
-                </p>
-              </CardContent>
-            </Card>
+  // Wait, if animation complete BUT status is still analyzing (slow API)?
+  if (showDestruction && isAnimationComplete && status !== "success") {
+    // Show a loader waiting for API?
+    // Or keep showing the AntiPortfolioDestruction modal until success?
+    // "AntiPortfolioDestruction" onComplete is called when user CLOSES the modal. 
+    // If they close it, they expect to see something.
+    // Let's show a loading state.
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold">Generazione Scenario in corso...</h2>
+          <p className="text-gray-500">Stiamo preparando la tua prima sfida.</p>
+        </div>
+      </div>
+    );
+  }
 
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+  // DEFAULT: Show Form
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            {t("subtitle")}
+          </p>
+        </div>
 
-            <div className="flex justify-end space-x-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push("/dashboard")}
-                disabled={isLoading}
-              >
-                {t("actions.skipForNow")}
-              </Button>
-              <Button type="submit" disabled={!canSubmit} className="min-w-[200px]">
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {status === "uploading" ? t("loading.uploading") : t("loading.analyzing")}
-                  </>
-                ) : (
-                  t("actions.analyzeProfile")
-                )}
-              </Button>
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <FileText className="h-5 w-5" />
+                <CardTitle>{t("uploadDocuments.title")}</CardTitle>
+              </div>
+              <CardDescription>
+                {t("uploadDocuments.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FileUpload onFilesChange={setFiles} />
+            </CardContent>
+          </Card>
 
-            {isLoading && (
-              <Card className="border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20">
-                <CardContent className="pt-6">
-                  <div className="flex items-center space-x-3">
-                    <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
-                    <div>
-                      <p className="font-medium text-blue-900 dark:text-blue-100">
-                        {status === "uploading"
-                          ? t("loading.uploadingMessage")
-                          : t("loading.analyzingMessage")}
-                      </p>
-                      <p className="text-sm text-blue-700 dark:text-blue-300">
-                        {t("loading.pleaseWait")}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </form>
-        )}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <Briefcase className="h-5 w-5" />
+                <CardTitle>{t("desiredRole.title")}</CardTitle>
+              </div>
+              <CardDescription>
+                {t("desiredRole.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Input
+                type="text"
+                placeholder={t("desiredRole.placeholder")}
+                value={desiredRole}
+                onChange={(e) => setDesiredRole(e.target.value)}
+                required
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <MessageSquare className="h-5 w-5" />
+                <CardTitle>{t("additionalInfo.title")}</CardTitle>
+              </div>
+              <CardDescription>
+                {t("additionalInfo.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                placeholder={t("additionalInfo.placeholder")}
+                value={freeText}
+                onChange={(e) => setFreeText(e.target.value)}
+                rows={8}
+                className="resize-none"
+              />
+              <p className="text-sm text-gray-500 mt-2">
+                {freeText.length} {t("additionalInfo.characters")}
+              </p>
+            </CardContent>
+          </Card>
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          <div className="flex justify-end space-x-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/dashboard")}
+              disabled={isLoading}
+            >
+              {t("actions.skipForNow")}
+            </Button>
+            <Button type="submit" disabled={!canSubmit} className="min-w-[200px]">
+              {t("actions.analyzeProfile")}
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   );

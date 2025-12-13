@@ -102,6 +102,11 @@
       "placeholder": "Raccontaci della tua esperienza professionale, competenze, progetti o qualsiasi altra informazione rilevante...",
       "characters": "caratteri"
     },
+    "desiredRole": {
+      "title": "Quale ruolo vuoi ricoprire?",
+      "placeholder": "es. Frontend Developer, Product Manager, UX Designer...",
+      "description": "Specifica il ruolo professionale che aspiri a ricoprire. Useremo questa informazione per generare un profilo adatto."
+    },
     "modelSelection": {
       "title": "Modello Claude",
       "description": "Scegli quale modello Claude usare per l'analisi",
@@ -121,6 +126,7 @@
     },
     "errors": {
       "noInput": "Carica almeno un documento o fornisci delle informazioni testuali",
+      "noRole": "Specifica il ruolo che vuoi ricoprire",
       "analysisFailed": "Analisi del profilo fallita"
     },
     "toasts": {

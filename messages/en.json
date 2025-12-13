@@ -102,6 +102,11 @@
       "placeholder": "Tell us about your professional experience, skills, projects, or any other relevant information...",
       "characters": "characters"
     },
+    "desiredRole": {
+      "title": "What role do you want to pursue?",
+      "placeholder": "e.g. Frontend Developer, Product Manager, UX Designer...",
+      "description": "Specify the professional role you aspire to. We'll use this information to generate a suitable profile."
+    },
     "modelSelection": {
       "title": "Claude Model",
       "description": "Choose which Claude model to use for analysis",
@@ -121,6 +126,7 @@
     },
     "errors": {
       "noInput": "Please upload at least one document or provide some text information",
+      "noRole": "Please specify the role you want to pursue",
       "analysisFailed": "Failed to analyze profile"
     },
     "toasts": {

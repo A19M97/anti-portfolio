@@ -17,15 +17,8 @@ logger.info("Anthropic client initialized", {
   hasApiKey: !!process.env.ANTHROPIC_API_KEY,
 });
 
-export interface DocumentFile {
-  data: string; // base64
-  mediaType: string;
-  isDocument: boolean;
-}
-
 export interface AnalyzeProfileParams {
-  documents: DocumentFile[];
-  freeText?: string;
+  desiredRole: string;
   model?: ClaudeModel;
 }
 
@@ -43,127 +36,105 @@ export interface AnalyzeProfileResult {
 export async function analyzeProfileWithClaude(
   params: AnalyzeProfileParams
 ): Promise<AnalyzeProfileResult> {
-  const { documents, freeText, model = CLAUDE_MODELS.HAIKU } = params;
+  const { desiredRole, model = CLAUDE_MODELS.HAIKU } = params;
 
   const logComplete = logger.startOperation("analyzeProfileWithClaude", {
-    documentCount: documents.length,
-    hasFreeText: !!freeText,
-    freeTextLength: freeText?.length || 0,
+    hasDesiredRole: !!desiredRole,
+    desiredRoleLength: desiredRole?.length || 0,
     model,
   });
 
-  logger.info("Starting profile analysis", {
-    documents: documents.map((d) => ({
-      mediaType: d.mediaType,
-      isDocument: d.isDocument,
-      dataLength: d.data.length,
-    })),
+  logger.info("Starting profile analysis for desired role", {
+    desiredRole,
     model,
   });
 
-  const prompt = `You are an expert career analyst. Analyze the provided professional documents (CV, LinkedIn profile, etc.) ${freeText ? "and additional information" : ""} to extract structured data about this person's professional profile.
+  const prompt = `Sei un esperto analista di carriera che deve creare un profilo professionale realistico e completo per un candidato che aspira al ruolo di "${desiredRole}".
 
-${freeText ? `\n\nAdditional Information:\n${freeText}\n` : ""}
+IMPORTANTE: Genera un profilo professionale FITTIZIO ma REALISTICO e COERENTE per una persona che vuole ottenere il ruolo di "${desiredRole}".
 
-Based on the documents provided, extract and return a JSON object with the following structure:
+Il profilo deve includere:
+- Competenze tecniche appropriate per il ruolo
+- Esperienza lavorativa plausibile che conduca a questo ruolo
+- Educazione pertinente
+- Progetti personali o open source rilevanti
+- Settori industriali appropriati
+
+Considera il livello di seniority implicato dal ruolo richiesto:
+- Se il ruolo è "Junior" o "Entry-level": crea un profilo con 0-2 anni di esperienza
+- Se il ruolo è "Mid-level" o senza specificazione: crea un profilo con 2-5 anni di esperienza
+- Se il ruolo è "Senior": crea un profilo con 5-8 anni di esperienza
+- Se il ruolo è "Lead" o "Principal": crea un profilo con 8+ anni di esperienza
+
+Genera un profilo che sia:
+1. Realistico - le date, le aziende e le tecnologie devono essere coerenti con la timeline professionale
+2. Specifico - includi dettagli concreti su tecnologie, metodologie e risultati ottenuti
+3. Appropriato - le competenze e l'esperienza devono essere allineate al ruolo desiderato
+4. Credibile - il percorso di carriera deve avere senso logicamente
+
+IMPORTANTE: Ritorna SOLO un JSON valido nel formato specificato, senza testo aggiuntivo o spiegazioni.
+
+Formato JSON richiesto:
 {
-  "role": "Current or most recent professional role/title",
-  "seniority": "Professional level (e.g., Junior, Mid-level, Senior, Lead, Principal, etc.)",
-  "sectors": ["Array of industry sectors they have experience in"],
+  "role": "Il ruolo esatto richiesto dall'utente: ${desiredRole}",
+  "seniority": "Il livello di seniority appropriato per questo ruolo (Junior, Mid-level, Senior, Lead, Principal, ecc.)",
+  "sectors": ["Array di 2-4 settori industriali rilevanti per questo ruolo"],
   "skills": [
     {
-      "name": "Skill or technology name",
-      "category": "Category (e.g., Frontend, Backend, DevOps, Design, etc.)",
-      "proficiency": "Level (e.g., Beginner, Intermediate, Advanced, Expert)"
+      "name": "Nome della competenza o tecnologia",
+      "category": "Categoria (es. Frontend, Backend, DevOps, Design, Project Management, ecc.)",
+      "proficiency": "Livello appropriato per la seniority (Beginner, Intermediate, Advanced, Expert)"
     }
+    // Includi 8-15 competenze rilevanti per il ruolo
   ],
   "workExperiences": [
     {
-      "company": "Company name",
-      "position": "Job title",
-      "startDate": "Start date (format: YYYY-MM or similar)",
-      "endDate": "End date or 'Present'",
-      "description": "Brief description of role and achievements",
-      "technologies": ["Technologies used in this role"]
+      "company": "Nome di un'azienda credibile (può essere fittizia ma realistica)",
+      "position": "Titolo di lavoro coerente con il percorso di carriera",
+      "startDate": "Data di inizio (formato: YYYY-MM)",
+      "endDate": "Data di fine o 'Present' per il ruolo attuale",
+      "description": "Descrizione dettagliata del ruolo, responsabilità e risultati ottenuti (2-4 frasi)",
+      "technologies": ["Array di tecnologie utilizzate in questo ruolo"]
     }
+    // Includi 2-5 esperienze lavorative a seconda della seniority
   ],
   "education": [
     {
-      "institution": "School/University name",
-      "degree": "Degree type (e.g., Bachelor's, Master's, PhD)",
-      "field": "Field of study",
-      "startDate": "Start date",
-      "endDate": "End date",
-      "description": "Additional details, honors, etc."
+      "institution": "Nome università o scuola",
+      "degree": "Tipo di laurea appropriato per il ruolo (es. Bachelor's, Master's, Bootcamp, ecc.)",
+      "field": "Campo di studi pertinente al ruolo",
+      "startDate": "Data inizio (YYYY)",
+      "endDate": "Data fine (YYYY)",
+      "description": "Dettagli aggiuntivi, tesi, progetti accademici rilevanti"
     }
+    // Includi 1-2 percorsi educativi
   ],
   "personalProjects": [
     {
-      "name": "Project name",
-      "description": "Project description",
-      "technologies": ["Technologies used"],
-      "url": "Live URL if available",
-      "repository": "GitHub or other repository URL"
+      "name": "Nome del progetto personale o open source",
+      "description": "Descrizione del progetto e del suo scopo (2-3 frasi)",
+      "technologies": ["Tecnologie utilizzate nel progetto"],
+      "url": "URL fittizio ma realistico (es. https://github.com/username/project-name)",
+      "repository": "URL repository fittizio ma realistico"
     }
+    // Includi 1-3 progetti personali rilevanti
   ],
-  "summary": "A concise professional summary (2-3 sentences) highlighting key strengths and experience",
+  "summary": "Un riassunto professionale conciso (2-3 frasi) che evidenzia i punti di forza chiave, l'esperienza rilevante e gli obiettivi di carriera in linea con il ruolo desiderato di ${desiredRole}",
   "additionalData": {
-    // Any other relevant information that doesn't fit the above categories
-    // Examples: languages spoken, certifications, publications, awards, etc.
+    "languages": ["Italiano (Native)", "Inglese (Fluent/Advanced/Intermediate)"],
+    "certifications": ["Eventuali certificazioni rilevanti per il ruolo"],
+    "interests": ["Interessi professionali correlati al ruolo"]
   }
 }
 
-IMPORTANT:
-- Only include fields where you have confident information from the documents
-- If a field cannot be determined, omit it or use null
-- Be precise and factual - don't invent information
-- For dates, preserve the format from the original documents
-- Extract as much detail as possible while maintaining accuracy
-- Return ONLY valid JSON, no additional text or explanation`;
-
-  // Build content blocks: documents first, then text prompt
-  logger.debug("Building content blocks for Claude API");
-  const contentBlocks: Anthropic.MessageParam["content"] = [];
-
-  // Add document blocks for PDFs and other files
-  for (const doc of documents) {
-    if (doc.isDocument && doc.mediaType === "application/pdf") {
-      // PDF documents
-      logger.debug("Adding PDF document block", {
-        mediaType: doc.mediaType,
-        base64Length: doc.data.length,
-      });
-      contentBlocks.push({
-        type: "document",
-        source: {
-          type: "base64",
-          media_type: "application/pdf",
-          data: doc.data,
-        },
-      } as any);
-    } else {
-      // Text files - decode base64 and add as text
-      const textContent = Buffer.from(doc.data, "base64").toString("utf-8");
-      logger.debug("Adding text document block", {
-        mediaType: doc.mediaType,
-        textLength: textContent.length,
-      });
-      contentBlocks.push({
-        type: "text",
-        text: `--- Document (${doc.mediaType}) ---\n${textContent}`,
-      });
-    }
-  }
-
-  // Add the main prompt
-  contentBlocks.push({
-    type: "text",
-    text: prompt,
-  });
+RICORDA:
+- Ritorna SOLO JSON valido, nessun testo aggiuntivo
+- Il profilo deve essere coerente internamente (le date devono avere senso, le tecnologie devono essere appropriate per il periodo)
+- Le competenze devono essere bilanciate e appropriate per la seniority
+- L'esperienza lavorativa deve mostrare una progressione di carriera logica`;
 
   logger.info("Sending request to Claude API", {
     model,
-    contentBlockCount: contentBlocks.length,
     maxTokens: 4096,
     promptLength: prompt.length,
   });
@@ -175,7 +146,7 @@ IMPORTANT:
     messages: [
       {
         role: "user",
-        content: contentBlocks,
+        content: prompt,
       },
     ],
   });
