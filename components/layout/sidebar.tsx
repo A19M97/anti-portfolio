@@ -26,6 +26,7 @@ import {
 import { LogoutButton } from "@/components/auth/logout-button"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { useLogout } from "@/hooks/useLogout";
+import { AntiPortfolioIcon } from "@/components/ui/anti-portfolio-icon"
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -159,8 +160,8 @@ export function Sidebar() {
         {/* Logo/Header */}
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <LayoutDashboard className="h-6 w-6" />
-            My App
+            <AntiPortfolioIcon className="h-6 w-6" />
+            Anti-Portfolio
           </h2>
         </div>
 
