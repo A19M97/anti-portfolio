@@ -25,8 +25,8 @@ export const personalProjectSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   technologies: z.array(z.string()).optional(),
-  url: z.string().optional(),
-  repository: z.string().optional(),
+  url: z.string().nullable().optional(),
+  repository: z.string().nullable().optional(),
 });
 
 // Schema for skills

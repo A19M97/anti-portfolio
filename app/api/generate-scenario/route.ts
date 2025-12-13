@@ -222,9 +222,9 @@ Genera ora lo scenario iniziale seguendo esattamente il formato specificato sopr
     const briefMessage = messages.find((m) => m.type === "BRIEF");
     const scenarioTitle = briefMessage
       ? briefMessage.content
-          .split("\n")[0]
-          .replace(/^#\s*/, "")
-          .substring(0, 100)
+        .split("\n")[0]
+        .replace(/^#\s*/, "")
+        .substring(0, 100)
       : "Nuova Simulazione";
 
     logger.debug("Extracted scenario title", { scenarioTitle });
@@ -236,7 +236,7 @@ Genera ora lo scenario iniziale seguendo esattamente il formato specificato sopr
         profileAnalysisId: profileAnalysis.id,
         configId: defaultConfig?.id,
         scenarioTitle,
-        totalTasks: defaultConfig?.tasksCount || 10,
+        totalTasks: (defaultConfig?.tasksCount || 10) + (defaultConfig?.challengesCount || 0),
         status: "active",
         messages: {
           create: messages.map((msg, index) => ({
