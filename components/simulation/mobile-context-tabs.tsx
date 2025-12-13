@@ -42,7 +42,7 @@ export function MobileContextTabs({ messages, chatContent }: MobileContextTabsPr
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="chat" className="flex-1 m-0">
+      <TabsContent value="chat" className="flex-1 m-0 overflow-y-auto">
         {chatContent}
       </TabsContent>
 
