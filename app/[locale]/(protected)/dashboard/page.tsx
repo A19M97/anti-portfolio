@@ -15,11 +15,7 @@ export default async function DashboardPage() {
 
   // Fetch all users for the users grid
   const allUsers = await db.user.findMany({
-    select: {
-      id: true,
-      clerkId: true,
-      name: true,
-      email: true,
+    include: {
       simulations: {
         where: { status: "completed" },
         select: { id: true }
