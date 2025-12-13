@@ -53,7 +53,7 @@ export type LLMAnalysisOutput = z.infer<typeof llmAnalysisOutputSchema>;
 
 // Available Claude models
 export const CLAUDE_MODELS = {
-  HAIKU: "claude-haiku-4-5",
+  HAIKU: "claude-3-5-haiku-20241022",
   SONNET: "claude-sonnet-4-5",
   OPUS: "claude-opus-4-5",
 } as const;

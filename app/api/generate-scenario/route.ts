@@ -208,8 +208,58 @@ Genera ora lo scenario iniziale seguendo esattamente il formato specificato sopr
       types: messages.map(m => m.type),
     });
 
+    // Get default configuration or create simulation without config
+    const defaultConfig = await db.simulationConfig.findFirst({
+      where: { isDefault: true },
+    });
+
+    logger.debug("Default config found", {
+      configId: defaultConfig?.id,
+      configName: defaultConfig?.name,
+    });
+
+    // Extract scenario title from first BRIEF message
+    const briefMessage = messages.find((m) => m.type === "BRIEF");
+    const scenarioTitle = briefMessage
+      ? briefMessage.content
+          .split("\n")[0]
+          .replace(/^#\s*/, "")
+          .substring(0, 100)
+      : "Nuova Simulazione";
+
+    logger.debug("Extracted scenario title", { scenarioTitle });
+
+    // Create simulation record in database
+    const simulation = await db.simulation.create({
+      data: {
+        userId: user.id,
+        profileAnalysisId: profileAnalysis.id,
+        configId: defaultConfig?.id,
+        scenarioTitle,
+        totalTasks: defaultConfig?.tasksCount || 10,
+        status: "active",
+        messages: {
+          create: messages.map((msg, index) => ({
+            role: "assistant",
+            content: msg.content,
+            type: msg.type,
+            orderIndex: index,
+          })),
+        },
+      },
+      include: {
+        messages: true,
+      },
+    });
+
+    logger.info("Simulation created in database", {
+      simulationId: simulation.id,
+      messagesCount: simulation.messages.length,
+    });
+
     logger.info("Scenario generation completed successfully", {
       userId: user.id,
+      simulationId: simulation.id,
       messagesCount: messages.length,
       modelUsed: modelToUse,
     });
@@ -218,6 +268,7 @@ Genera ora lo scenario iniziale seguendo esattamente il formato specificato sopr
 
     return NextResponse.json({
       success: true,
+      simulationId: simulation.id,
       messages,
       rawResponse: responseText,
       model: modelToUse,

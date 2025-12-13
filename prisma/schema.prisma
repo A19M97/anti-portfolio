@@ -18,39 +18,168 @@ model User {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   profileAnalysis ProfileAnalysis[]
+  simulations     Simulation[]
 
   @@map("users")
 }
 
 model ProfileAnalysis {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Analyzed data from LLM
-  role              String?
-  seniority         String?
-  sectors           String[] // Array of sectors
-  skills            Json?    // Array of skills/technologies
-  workExperiences   Json?    // Array of work experiences
-  education         Json?    // Array of education entries
-  personalProjects  Json?    // Array of personal projects
-  additionalData    Json?    // Flexible field for future additions
+  role             String?
+  seniority        String?
+  sectors          String[] // Array of sectors
+  skills           Json? // Array of skills/technologies
+  workExperiences  Json? // Array of work experiences
+  education        Json? // Array of education entries
+  personalProjects Json? // Array of personal projects
+  additionalData   Json? // Flexible field for future additions
 
   // Raw LLM response (complete JSON from Claude)
-  rawAnalysis       Json?    // Complete raw JSON response from Claude
-  claudeResponse    String?  @db.Text // Raw text response before parsing
+  rawAnalysis    Json? // Complete raw JSON response from Claude
+  claudeResponse String? @db.Text // Raw text response before parsing
 
   // Original data
-  uploadedFiles     String[] // Paths to uploaded files
-  freeText          String?  @db.Text
+  uploadedFiles String[] // Paths to uploaded files
+  freeText      String?  @db.Text
 
   // Metadata
-  analysisStatus    String   @default("pending") // pending, processing, completed, failed
-  errorMessage      String?  @db.Text
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  analysisStatus String   @default("pending") // pending, processing, completed, failed
+  errorMessage   String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  @@map("profile_analyses")
+  // Relations
+  simulations Simulation[]
+
   @@index([userId])
+  @@map("profile_analyses")
+}
+
+// Simulation Configuration - definisce la struttura dello scenario
+model SimulationConfig {
+  id          String  @id @default(cuid())
+  name        String // es. "Standard", "Quick", "Extended"
+  description String? @db.Text
+
+  // Configurazione struttura dello scenario
+  tasksCount      Int    @default(10) // numero di task/decisioni
+  challengesCount Int    @default(3) // numero di sfide/crisi
+  difficulty      String @default("medium") // easy, medium, hard
+
+  // Altre configurazioni
+  timelineType String @default("standard") // quick, standard, extended
+  contextType  String @default("startup") // startup, enterprise, agency, etc.
+
+  // Metadata
+  isDefault Boolean  @default(false)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  simulations Simulation[]
+
+  @@map("simulation_configs")
+}
+
+// Simulation - traccia ogni simulazione dell'utente
+model Simulation {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  profileAnalysisId String
+  profileAnalysis   ProfileAnalysis @relation(fields: [profileAnalysisId], references: [id])
+
+  configId String?
+  config   SimulationConfig? @relation(fields: [configId], references: [id])
+
+  // Scenario data
+  scenarioTitle       String?
+  scenarioDescription String? @db.Text
+  companyName         String?
+  teamSize            Int?
+
+  // Progress tracking
+  currentTaskIndex Int @default(0)
+  totalTasks       Int @default(10)
+  completedTasks   Int @default(0)
+
+  // State
+  status String @default("active") // active, completed, abandoned
+  score  Int?
+
+  // Metadata
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  messages   SimulationMessage[]
+  evaluation SimulationEvaluation?
+
+  @@index([userId])
+  @@index([status])
+  @@map("simulations")
+}
+
+// SimulationMessage - ogni messaggio della conversazione
+model SimulationMessage {
+  id           String     @id @default(cuid())
+  simulationId String
+  simulation   Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+
+  // Message data
+  role    String // "assistant" or "user"
+  content String  @db.Text
+  type    String? // "BRIEF", "TEAM", "TIMELINE", "TASK", "FEEDBACK", "CHALLENGE", etc.
+
+  // Metadata per tracking avanzato
+  metadata   Json? // dati aggiuntivi (es. decisioni prese, score parziale, etc.)
+  orderIndex Int // per mantenere l'ordine
+  createdAt  DateTime @default(now())
+
+  @@index([simulationId])
+  @@index([simulationId, orderIndex])
+  @@map("simulation_messages")
+}
+
+// SimulationEvaluation - valutazione qualitativa della performance dell'utente
+model SimulationEvaluation {
+  id           String     @id @default(cuid())
+  simulationId String     @unique
+  simulation   Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+
+  // Evaluation data
+  strengths        Json // Array of { title: string, description: string, examples: string[] }
+  weaknesses       Json // Array of { title: string, description: string, suggestions: string[] }
+  qualities        Json // Array of { name: string, score: number, description: string }
+  overallAssessment String @db.Text // Valutazione complessiva narrativa
+
+  // Detailed insights
+  leadershipStyle  String? @db.Text // Stile di leadership emergente
+  decisionMaking   String? @db.Text // Approccio al decision making
+  communicationStyle String? @db.Text // Stile comunicativo
+  problemSolving   String? @db.Text // Approccio al problem solving
+
+  // Scores (0-100)
+  overallScore     Int? // Score complessivo
+  leadershipScore  Int?
+  technicalScore   Int?
+  communicationScore Int?
+  adaptabilityScore Int?
+
+  // Metadata
+  generatedBy String @default("claude") // quale modello ha generato la valutazione
+  modelUsed   String? // nome specifico del modello
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([simulationId])
+  @@map("simulation_evaluations")
 }

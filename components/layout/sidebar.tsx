@@ -9,6 +9,7 @@ import {
   X,
   LayoutDashboard,
   TestTube,
+  History,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -30,6 +31,11 @@ const menuItems = [
     title: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Le Mie Simulazioni",
+    href: "/simulations",
+    icon: History,
   },
   {
     title: "Test Page",
