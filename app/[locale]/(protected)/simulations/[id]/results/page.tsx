@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
+import { SimulationTimeline } from "@/components/simulation/simulation-timeline";
 
 interface Strength {
   title: string;
@@ -61,6 +62,13 @@ interface Evaluation {
   createdAt: string;
 }
 
+interface SimulationMessage {
+  role: string;
+  content: string;
+  type?: string;
+  orderIndex: number;
+}
+
 interface Simulation {
   id: string;
   scenarioTitle?: string;
@@ -68,6 +76,7 @@ interface Simulation {
   totalTasks: number;
   status: string;
   completedAt?: string;
+  messages: SimulationMessage[];
 }
 
 type LoadingState = "loading" | "generating" | "ready" | "error";
@@ -467,6 +476,12 @@ export default function SimulationResultsPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Simulation Timeline */}
+        <SimulationTimeline
+          messages={simulation.messages}
+          scenarioTitle={simulation.scenarioTitle}
+        />
 
         {/* CTA Section */}
         <div className="text-center py-8 space-y-4">

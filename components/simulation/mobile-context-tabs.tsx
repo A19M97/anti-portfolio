@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 interface ChatMessage {
   role: "assistant" | "user";
   content: string;
-  type?: "BRIEF" | "TEAM" | "TIMELINE" | "TASK";
+  type?: "BRIEF" | "TEAM" | "TIMELINE" | "TASK" | "CHALLENGE" | "FEEDBACK";
 }
 
 interface MobileContextTabsProps {
