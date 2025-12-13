@@ -15,6 +15,7 @@ model User {
   clerkId         String            @unique
   email           String            @unique
   name            String?
+  role            String            @default("user") // "admin" or "user"
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   profileAnalysis ProfileAnalysis[]
@@ -182,4 +183,16 @@ model SimulationEvaluation {
 
   @@index([simulationId])
   @@map("simulation_evaluations")
+}
+
+// Global app settings
+model AppSettings {
+  id           String   @id @default(cuid())
+  key          String   @unique // e.g., "default_claude_model"
+  value        String   // e.g., "claude-3-5-haiku-20241022"
+  description  String?  @db.Text
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+
+  @@map("app_settings")
 }

@@ -1,42 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, AlertCircle, FileText, MessageSquare, Sparkles, Code } from "lucide-react";
+import { Loader2, CheckCircle2, AlertCircle, FileText, MessageSquare, Code } from "lucide-react";
 import { toast } from "sonner";
-import { CLAUDE_MODELS } from "@/lib/validations/profile-analysis";
 
 type AnalysisStatus = "idle" | "uploading" | "analyzing" | "success" | "error";
 
-const MODEL_INFO = {
-  [CLAUDE_MODELS.HAIKU]: {
-    name: "Haiku",
-    description: "Più veloce ed economico",
-    cost: "$0.25/$1.25 per M token",
-  },
-  [CLAUDE_MODELS.SONNET]: {
-    name: "Sonnet",
-    description: "Bilanciato e accurato",
-    cost: "$3/$15 per M token",
-  },
-  [CLAUDE_MODELS.OPUS]: {
-    name: "Opus",
-    description: "Più potente ma costoso",
-    cost: "$15/$75 per M token",
-  },
-};
-
 export default function OnboardingPage() {
   const router = useRouter();
+  const t = useTranslations("Onboarding");
   const [files, setFiles] = useState<File[]>([]);
   const [freeText, setFreeText] = useState("");
-  const [selectedModel, setSelectedModel] = useState(CLAUDE_MODELS.HAIKU);
   const [status, setStatus] = useState<AnalysisStatus>("idle");
   const [error, setError] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
@@ -59,12 +41,11 @@ export default function OnboardingPage() {
       console.log("[Frontend] Validating input", {
         filesCount: files.length,
         hasFreeText: !!freeText.trim(),
-        selectedModel,
       });
 
       if (files.length === 0 && !freeText.trim()) {
         console.warn("[Frontend] Validation failed: no input provided");
-        setError("Please upload at least one document or provide some text information");
+        setError(t("errors.noInput"));
         setStatus("error");
         return;
       }
@@ -89,11 +70,8 @@ export default function OnboardingPage() {
         formData.append("freeText", freeText);
       }
 
-      formData.append("model", selectedModel);
-      console.log("[Frontend] Selected model:", selectedModel);
-
       setStatus("analyzing");
-      toast.info("Analyzing your profile with AI...");
+      toast.info(t("toasts.analyzing"));
 
       // Send to API
       console.log("[Frontend] Sending request to API");
@@ -114,7 +92,7 @@ export default function OnboardingPage() {
       if (!response.ok) {
         const errorData = await response.json();
         console.error("[Frontend] API error response:", errorData);
-        throw new Error(errorData.error || "Failed to analyze profile");
+        throw new Error(errorData.error || t("errors.analysisFailed"));
       }
 
       const result = await response.json();
@@ -138,7 +116,7 @@ export default function OnboardingPage() {
         totalDurationMs: totalDuration,
       });
 
-      toast.success("Profile analyzed successfully!");
+      toast.success(t("toasts.success"));
     } catch (err) {
       const totalDuration = Date.now() - startTime;
       console.error("[Frontend] Analysis failed", {
@@ -146,9 +124,9 @@ export default function OnboardingPage() {
         durationMs: totalDuration,
       });
 
-      setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      setError(err instanceof Error ? err.message : t("errors.analysisFailed"));
       setStatus("error");
-      toast.error("Failed to analyze profile");
+      toast.error(t("toasts.error"));
     }
   };
 
@@ -159,9 +137,9 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-2">Welcome to Anti-Portfolio</h1>
+          <h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Let's analyze your professional profile to get started
+            {t("subtitle")}
           </p>
         </div>
 
@@ -171,28 +149,28 @@ export default function OnboardingPage() {
               <CardHeader>
                 <div className="flex items-center space-x-2">
                   <CheckCircle2 className="h-6 w-6 text-green-600" />
-                  <CardTitle className="text-green-600">Analysis Complete!</CardTitle>
+                  <CardTitle className="text-green-600">{t("success.title")}</CardTitle>
                 </div>
                 <CardDescription>
-                  Profile analyzed successfully using {usedModel ? MODEL_INFO[usedModel as keyof typeof MODEL_INFO]?.name : 'Claude'}
+                  {t("success.description", { model: usedModel || 'Claude' })}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {analysisResult.role && (
                   <div>
-                    <Label className="text-sm font-medium">Role</Label>
+                    <Label className="text-sm font-medium">{t("success.role")}</Label>
                     <p className="text-lg">{analysisResult.role}</p>
                   </div>
                 )}
                 {analysisResult.seniority && (
                   <div>
-                    <Label className="text-sm font-medium">Seniority</Label>
+                    <Label className="text-sm font-medium">{t("success.seniority")}</Label>
                     <p className="text-lg">{analysisResult.seniority}</p>
                   </div>
                 )}
                 {analysisResult.sectors && analysisResult.sectors.length > 0 && (
                   <div>
-                    <Label className="text-sm font-medium">Sectors</Label>
+                    <Label className="text-sm font-medium">{t("success.sectors")}</Label>
                     <div className="flex flex-wrap gap-2 mt-1">
                       {analysisResult.sectors.map((sector: string, idx: number) => (
                         <span
@@ -207,10 +185,10 @@ export default function OnboardingPage() {
                 )}
                 <div className="pt-4 flex gap-3 flex-wrap">
                   <Button onClick={() => router.push("/simulation")} size="lg" className="flex-1 min-w-[200px]">
-                    Continua con la Simulazione →
+                    {t("success.continueSimulation")}
                   </Button>
                   <Button onClick={() => router.push("/dashboard")} variant="outline">
-                    Go to Dashboard
+                    {t("success.goToDashboard")}
                   </Button>
                   <Button
                     variant="outline"
@@ -222,9 +200,10 @@ export default function OnboardingPage() {
                       setClaudeResponse(null);
                       setFiles([]);
                       setFreeText("");
+                      setUsedModel(null);
                     }}
                   >
-                    Analyze Another Profile
+                    {t("success.analyzeAnother")}
                   </Button>
                 </div>
               </CardContent>
@@ -235,10 +214,10 @@ export default function OnboardingPage() {
                 <CardHeader>
                   <div className="flex items-center space-x-2">
                     <Code className="h-5 w-5" />
-                    <CardTitle>Prompt Sent to Claude</CardTitle>
+                    <CardTitle>{t("debug.promptTitle")}</CardTitle>
                   </div>
                   <CardDescription>
-                    This is the exact prompt that was sent to the AI model for analysis
+                    {t("debug.promptDescription")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -254,10 +233,10 @@ export default function OnboardingPage() {
                 <CardHeader>
                   <div className="flex items-center space-x-2">
                     <Code className="h-5 w-5 text-green-600" />
-                    <CardTitle>Raw JSON from Claude</CardTitle>
+                    <CardTitle>{t("debug.jsonTitle")}</CardTitle>
                   </div>
                   <CardDescription>
-                    Complete JSON response from Claude (before validation and parsing)
+                    {t("debug.jsonDescription")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -267,7 +246,7 @@ export default function OnboardingPage() {
                     </pre>
                   </div>
                   <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                    <strong>Size:</strong> {JSON.stringify(rawAnalysis).length} characters
+                    <strong>{t("debug.size")}</strong> {JSON.stringify(rawAnalysis).length} {t("additionalInfo.characters")}
                   </div>
                 </CardContent>
               </Card>
@@ -278,10 +257,10 @@ export default function OnboardingPage() {
                 <CardHeader>
                   <div className="flex items-center space-x-2">
                     <Code className="h-5 w-5 text-blue-600" />
-                    <CardTitle>Raw Text Response from Claude</CardTitle>
+                    <CardTitle>{t("debug.textTitle")}</CardTitle>
                   </div>
                   <CardDescription>
-                    The complete raw text response from Claude API (may include markdown formatting)
+                    {t("debug.textDescription")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -289,7 +268,7 @@ export default function OnboardingPage() {
                     <pre className="text-sm whitespace-pre-wrap font-mono">{claudeResponse}</pre>
                   </div>
                   <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                    <strong>Size:</strong> {claudeResponse.length} characters
+                    <strong>{t("debug.size")}</strong> {claudeResponse.length} {t("additionalInfo.characters")}
                   </div>
                 </CardContent>
               </Card>
@@ -301,10 +280,10 @@ export default function OnboardingPage() {
               <CardHeader>
                 <div className="flex items-center space-x-2">
                   <FileText className="h-5 w-5" />
-                  <CardTitle>Upload Documents</CardTitle>
+                  <CardTitle>{t("uploadDocuments.title")}</CardTitle>
                 </div>
                 <CardDescription>
-                  Upload your CV, LinkedIn export (PDF), or any professional documents
+                  {t("uploadDocuments.description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -316,61 +295,23 @@ export default function OnboardingPage() {
               <CardHeader>
                 <div className="flex items-center space-x-2">
                   <MessageSquare className="h-5 w-5" />
-                  <CardTitle>Additional Information</CardTitle>
+                  <CardTitle>{t("additionalInfo.title")}</CardTitle>
                 </div>
                 <CardDescription>
-                  Add any additional information about your professional background, skills, or
-                  projects
+                  {t("additionalInfo.description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Textarea
-                  placeholder="Tell us about your professional experience, skills, projects, or any other relevant information..."
+                  placeholder={t("additionalInfo.placeholder")}
                   value={freeText}
                   onChange={(e) => setFreeText(e.target.value)}
                   rows={8}
                   className="resize-none"
                 />
                 <p className="text-sm text-gray-500 mt-2">
-                  {freeText.length} characters
+                  {freeText.length} {t("additionalInfo.characters")}
                 </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <div className="flex items-center space-x-2">
-                  <Sparkles className="h-5 w-5" />
-                  <CardTitle>Claude Model</CardTitle>
-                </div>
-                <CardDescription>
-                  Choose which Claude model to use for analysis
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="model">AI Model</Label>
-                    <select
-                      id="model"
-                      value={selectedModel}
-                      onChange={(e) => setSelectedModel(e.target.value as any)}
-                      className="w-full p-2 border rounded-md bg-background"
-                      disabled={isLoading}
-                    >
-                      {Object.entries(MODEL_INFO).map(([key, info]) => (
-                        <option key={key} value={key}>
-                          {info.name} - {info.description} ({info.cost})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    <strong>Selected:</strong> {MODEL_INFO[selectedModel as keyof typeof MODEL_INFO].name}
-                    <br />
-                    {MODEL_INFO[selectedModel as keyof typeof MODEL_INFO].description}
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
@@ -388,16 +329,16 @@ export default function OnboardingPage() {
                 onClick={() => router.push("/dashboard")}
                 disabled={isLoading}
               >
-                Skip for Now
+                {t("actions.skipForNow")}
               </Button>
               <Button type="submit" disabled={!canSubmit} className="min-w-[200px]">
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {status === "uploading" ? "Uploading..." : "Analyzing with AI..."}
+                    {status === "uploading" ? t("loading.uploading") : t("loading.analyzing")}
                   </>
                 ) : (
-                  "Analyze Profile"
+                  t("actions.analyzeProfile")
                 )}
               </Button>
             </div>
@@ -410,11 +351,11 @@ export default function OnboardingPage() {
                     <div>
                       <p className="font-medium text-blue-900 dark:text-blue-100">
                         {status === "uploading"
-                          ? "Uploading your documents..."
-                          : "AI is analyzing your profile..."}
+                          ? t("loading.uploadingMessage")
+                          : t("loading.analyzingMessage")}
                       </p>
                       <p className="text-sm text-blue-700 dark:text-blue-300">
-                        This may take a moment. Please don't close this page.
+                        {t("loading.pleaseWait")}
                       </p>
                     </div>
                   </div>

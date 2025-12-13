@@ -52,10 +52,41 @@ export default function UserProfilePage() {
     completedSimulations: 0,
     activeSimulations: 0
   });
+  const [hasProfileAnalysis, setHasProfileAnalysis] = useState(false);
 
   useEffect(() => {
     fetchUserProfile();
   }, [userId]);
+
+  useEffect(() => {
+    if (isOwnProfile) {
+      checkProfileAnalysis();
+    }
+  }, [isOwnProfile]);
+
+  const checkProfileAnalysis = async () => {
+    try {
+      const response = await fetch("/api/analyze-profile");
+      if (response.ok) {
+        const data = await response.json();
+        // data.data è un array di ProfileAnalysis
+        const completedAnalyses = data.data.filter(
+          (pa: any) => pa.analysisStatus === "completed"
+        );
+        setHasProfileAnalysis(completedAnalyses.length > 0);
+      }
+    } catch (err) {
+      console.error("Error checking profile analysis:", err);
+    }
+  };
+
+  const handleNewSimulation = () => {
+    if (hasProfileAnalysis) {
+      router.push("/simulation");
+    } else {
+      router.push("/onboarding");
+    }
+  };
 
   const fetchUserProfile = async () => {
     try {
@@ -201,12 +232,10 @@ export default function UserProfilePage() {
       {/* New Simulation Button - Only for own profile */}
       {isOwnProfile && (
         <div className="mb-6 flex justify-end">
-          <Link href="/simulation">
-            <Button size="lg" className="gap-2">
-              <Plus className="h-5 w-5" />
-              Nuova Simulazione
-            </Button>
-          </Link>
+          <Button size="lg" className="gap-2" onClick={handleNewSimulation}>
+            <Plus className="h-5 w-5" />
+            Nuova Simulazione
+          </Button>
         </div>
       )}
 

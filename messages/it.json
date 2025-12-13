@@ -52,5 +52,122 @@
     "exploreProfiles": "Esplora i profili e le simulazioni degli altri utenti",
     "noUsers": "Nessun utente trovato",
     "namelessUser": "Utente senza nome"
+  },
+  "Onboarding": {
+    "title": "Benvenuto in Anti-Portfolio",
+    "subtitle": "Analizziamo il tuo profilo professionale per iniziare",
+    "models": {
+      "haiku": {
+        "name": "Haiku",
+        "description": "Più veloce ed economico",
+        "cost": "$0.25/$1.25 per M token"
+      },
+      "sonnet": {
+        "name": "Sonnet",
+        "description": "Bilanciato e accurato",
+        "cost": "$3/$15 per M token"
+      },
+      "opus": {
+        "name": "Opus",
+        "description": "Più potente ma costoso",
+        "cost": "$15/$75 per M token"
+      }
+    },
+    "success": {
+      "title": "Analisi Completata!",
+      "description": "Profilo analizzato con successo usando {model}",
+      "role": "Ruolo",
+      "seniority": "Seniority",
+      "sectors": "Settori",
+      "continueSimulation": "Continua con la Simulazione →",
+      "goToDashboard": "Vai alla Dashboard",
+      "analyzeAnother": "Analizza un Altro Profilo"
+    },
+    "debug": {
+      "promptTitle": "Prompt Inviato a Claude",
+      "promptDescription": "Questo è l'esatto prompt che è stato inviato al modello AI per l'analisi",
+      "jsonTitle": "JSON Grezzo da Claude",
+      "jsonDescription": "Risposta JSON completa da Claude (prima della validazione e parsing)",
+      "textTitle": "Risposta Testuale Grezza da Claude",
+      "textDescription": "La risposta testuale grezza completa dall'API di Claude (può includere formattazione markdown)",
+      "size": "Dimensione:"
+    },
+    "uploadDocuments": {
+      "title": "Carica Documenti",
+      "description": "Carica il tuo CV, esportazione LinkedIn (PDF), o qualsiasi documento professionale"
+    },
+    "additionalInfo": {
+      "title": "Informazioni Aggiuntive",
+      "description": "Aggiungi qualsiasi informazione aggiuntiva sul tuo background professionale, competenze o progetti",
+      "placeholder": "Raccontaci della tua esperienza professionale, competenze, progetti o qualsiasi altra informazione rilevante...",
+      "characters": "caratteri"
+    },
+    "modelSelection": {
+      "title": "Modello Claude",
+      "description": "Scegli quale modello Claude usare per l'analisi",
+      "label": "Modello AI",
+      "selected": "Selezionato:"
+    },
+    "actions": {
+      "skipForNow": "Salta per Ora",
+      "analyzeProfile": "Analizza Profilo"
+    },
+    "loading": {
+      "uploading": "Caricamento...",
+      "analyzing": "Analisi con AI...",
+      "uploadingMessage": "Caricamento dei tuoi documenti...",
+      "analyzingMessage": "L'AI sta analizzando il tuo profilo...",
+      "pleaseWait": "Potrebbe volerci un momento. Non chiudere questa pagina."
+    },
+    "errors": {
+      "noInput": "Carica almeno un documento o fornisci delle informazioni testuali",
+      "analysisFailed": "Analisi del profilo fallita"
+    },
+    "toasts": {
+      "analyzing": "Analisi del tuo profilo con AI...",
+      "success": "Profilo analizzato con successo!",
+      "error": "Analisi del profilo fallita"
+    }
+  },
+  "Settings": {
+    "title": "Impostazioni App",
+    "subtitle": "Configura le impostazioni globali dell'applicazione",
+    "loading": "Caricamento impostazioni...",
+    "models": {
+      "haiku": {
+        "name": "Haiku",
+        "description": "Più veloce ed economico",
+        "cost": "$0.25/$1.25 per M token"
+      },
+      "sonnet": {
+        "name": "Sonnet",
+        "description": "Bilanciato e accurato",
+        "cost": "$3/$15 per M token"
+      },
+      "opus": {
+        "name": "Opus",
+        "description": "Più potente ma costoso",
+        "cost": "$15/$75 per M token"
+      }
+    },
+    "claudeModel": {
+      "title": "Modello Claude Predefinito",
+      "description": "Seleziona il modello Claude AI che verrà utilizzato per tutte le analisi dei profili e le simulazioni nell'intera applicazione",
+      "label": "Modello AI",
+      "currentSelection": "Attualmente selezionato:"
+    },
+    "actions": {
+      "save": "Salva Impostazioni",
+      "saving": "Salvataggio..."
+    },
+    "errors": {
+      "forbidden": "Accesso negato. Solo gli amministratori possono modificare queste impostazioni.",
+      "loadFailed": "Caricamento impostazioni fallito",
+      "saveFailed": "Salvataggio impostazioni fallito"
+    },
+    "toasts": {
+      "saveSuccess": "Impostazioni salvate con successo!",
+      "saveError": "Salvataggio impostazioni fallito"
+    }
   }
 }

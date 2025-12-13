@@ -52,5 +52,122 @@
     "exploreProfiles": "Explore profiles and simulations of other users",
     "noUsers": "No users found",
     "namelessUser": "Nameless User"
+  },
+  "Onboarding": {
+    "title": "Welcome to Anti-Portfolio",
+    "subtitle": "Let's analyze your professional profile to get started",
+    "models": {
+      "haiku": {
+        "name": "Haiku",
+        "description": "Faster and economical",
+        "cost": "$0.25/$1.25 per M token"
+      },
+      "sonnet": {
+        "name": "Sonnet",
+        "description": "Balanced and accurate",
+        "cost": "$3/$15 per M token"
+      },
+      "opus": {
+        "name": "Opus",
+        "description": "Most powerful but expensive",
+        "cost": "$15/$75 per M token"
+      }
+    },
+    "success": {
+      "title": "Analysis Complete!",
+      "description": "Profile analyzed successfully using {model}",
+      "role": "Role",
+      "seniority": "Seniority",
+      "sectors": "Sectors",
+      "continueSimulation": "Continue with Simulation →",
+      "goToDashboard": "Go to Dashboard",
+      "analyzeAnother": "Analyze Another Profile"
+    },
+    "debug": {
+      "promptTitle": "Prompt Sent to Claude",
+      "promptDescription": "This is the exact prompt that was sent to the AI model for analysis",
+      "jsonTitle": "Raw JSON from Claude",
+      "jsonDescription": "Complete JSON response from Claude (before validation and parsing)",
+      "textTitle": "Raw Text Response from Claude",
+      "textDescription": "The complete raw text response from Claude API (may include markdown formatting)",
+      "size": "Size:"
+    },
+    "uploadDocuments": {
+      "title": "Upload Documents",
+      "description": "Upload your CV, LinkedIn export (PDF), or any professional documents"
+    },
+    "additionalInfo": {
+      "title": "Additional Information",
+      "description": "Add any additional information about your professional background, skills, or projects",
+      "placeholder": "Tell us about your professional experience, skills, projects, or any other relevant information...",
+      "characters": "characters"
+    },
+    "modelSelection": {
+      "title": "Claude Model",
+      "description": "Choose which Claude model to use for analysis",
+      "label": "AI Model",
+      "selected": "Selected:"
+    },
+    "actions": {
+      "skipForNow": "Skip for Now",
+      "analyzeProfile": "Analyze Profile"
+    },
+    "loading": {
+      "uploading": "Uploading...",
+      "analyzing": "Analyzing with AI...",
+      "uploadingMessage": "Uploading your documents...",
+      "analyzingMessage": "AI is analyzing your profile...",
+      "pleaseWait": "This may take a moment. Please don't close this page."
+    },
+    "errors": {
+      "noInput": "Please upload at least one document or provide some text information",
+      "analysisFailed": "Failed to analyze profile"
+    },
+    "toasts": {
+      "analyzing": "Analyzing your profile with AI...",
+      "success": "Profile analyzed successfully!",
+      "error": "Failed to analyze profile"
+    }
+  },
+  "Settings": {
+    "title": "App Settings",
+    "subtitle": "Configure global application settings",
+    "loading": "Loading settings...",
+    "models": {
+      "haiku": {
+        "name": "Haiku",
+        "description": "Faster and economical",
+        "cost": "$0.25/$1.25 per M token"
+      },
+      "sonnet": {
+        "name": "Sonnet",
+        "description": "Balanced and accurate",
+        "cost": "$3/$15 per M token"
+      },
+      "opus": {
+        "name": "Opus",
+        "description": "Most powerful but expensive",
+        "cost": "$15/$75 per M token"
+      }
+    },
+    "claudeModel": {
+      "title": "Default Claude Model",
+      "description": "Select the Claude AI model that will be used for all profile analyses and simulations across the application",
+      "label": "AI Model",
+      "currentSelection": "Currently selected:"
+    },
+    "actions": {
+      "save": "Save Settings",
+      "saving": "Saving..."
+    },
+    "errors": {
+      "forbidden": "Access denied. Only administrators can modify these settings.",
+      "loadFailed": "Failed to load settings",
+      "saveFailed": "Failed to save settings"
+    },
+    "toasts": {
+      "saveSuccess": "Settings saved successfully!",
+      "saveError": "Failed to save settings"
+    }
   }
 }

@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import { ContextSidebar } from "@/components/simulation/context-sidebar";
 import { MobileContextTabs } from "@/components/simulation/mobile-context-tabs";
+import {Textarea} from "@/components/ui/textarea";
 
 interface ChatMessage {
   role: "assistant" | "user";
@@ -134,7 +135,7 @@ const ChatContent = ({
       ) : (
         <form onSubmit={handleSendMessage} className="flex items-end space-x-2">
           <div className="flex-1">
-            <Input
+            <Textarea
               placeholder="Scrivi un messaggio..."
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}

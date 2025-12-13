@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   TestTube,
   History,
+  Settings,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -31,11 +32,12 @@ export function Sidebar() {
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const pathname = usePathname()
   const { user } = useUser()
   const handleLogout = useLogout();
 
-  // Fetch current user's database ID
+  // Fetch current user's database ID and check if admin
   useEffect(() => {
     const fetchCurrentUserId = async () => {
       try {
@@ -53,8 +55,23 @@ export function Sidebar() {
       }
     }
 
+    const checkAdminStatus = async () => {
+      try {
+        const response = await fetch("/api/settings")
+        if (response.ok) {
+          // If user can access settings endpoint, they are admin
+          setIsAdmin(true)
+        } else {
+          setIsAdmin(false)
+        }
+      } catch (error) {
+        setIsAdmin(false)
+      }
+    }
+
     if (user?.id) {
       fetchCurrentUserId()
+      checkAdminStatus()
     }
   }, [user?.id])
 
@@ -98,7 +115,12 @@ export function Sidebar() {
       title: "Le Mie Simulazioni",
       href: currentUserId ? `/users/${currentUserId}` : "/users/me",
       icon: History,
-    }
+    },
+    ...(isAdmin ? [{
+      title: "Impostazioni",
+      href: "/settings",
+      icon: Settings,
+    }] : [])
   ]
 
   return (

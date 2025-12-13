@@ -138,12 +138,38 @@ export default function SimulationResultsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [currentSection, setCurrentSection] = useState<string>("");
+  const [hasProfileAnalysis, setHasProfileAnalysis] = useState(false);
 
   const confettiTriggered = useRef(false);
 
   useEffect(() => {
     loadResults();
+    checkProfileAnalysis();
   }, [simulationId]);
+
+  const checkProfileAnalysis = async () => {
+    try {
+      const response = await fetch("/api/analyze-profile");
+      if (response.ok) {
+        const data = await response.json();
+        // data.data è un array di ProfileAnalysis
+        const completedAnalyses = data.data.filter(
+          (pa: any) => pa.analysisStatus === "completed"
+        );
+        setHasProfileAnalysis(completedAnalyses.length > 0);
+      }
+    } catch (err) {
+      console.error("Error checking profile analysis:", err);
+    }
+  };
+
+  const handleNewSimulation = () => {
+    if (hasProfileAnalysis) {
+      router.push("/simulation");
+    } else {
+      router.push("/onboarding");
+    }
+  };
 
   // Trigger confetti for high scores
   useEffect(() => {
@@ -790,7 +816,7 @@ export default function SimulationResultsPage() {
               whileTap={{ scale: 0.95 }}
             >
               <Button
-                onClick={() => router.push("/simulation")}
+                onClick={handleNewSimulation}
                 size="lg"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
               >

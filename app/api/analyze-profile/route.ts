@@ -13,6 +13,7 @@ import {
   MAX_FILES,
 } from "@/lib/validations/profile-analysis";
 import { loggers } from "@/lib/logger";
+import { getDefaultClaudeModel } from "@/lib/settings";
 
 const logger = loggers.api;
 
@@ -48,7 +49,9 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const files = formData.getAll("files") as File[];
     const freeText = formData.get("freeText") as string | null;
-    const model = formData.get("model") as string | null;
+
+    // Get the default Claude model from app settings
+    const model = await getDefaultClaudeModel();
 
     logger.info("Form data parsed", {
       filesCount: files.length,
