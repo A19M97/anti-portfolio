@@ -86,12 +86,12 @@ export async function PUT(request: Request) {
     if (!modelValidation.success) {
       logger.warn("Invalid model provided", {
         model: body.defaultClaudeModel,
-        errors: modelValidation.error.errors,
+        errors: modelValidation.error.issues,
       });
       return NextResponse.json(
         {
           error: "Invalid Claude model",
-          details: modelValidation.error.errors,
+          details: modelValidation.error.issues,
         },
         { status: 400 }
       );
