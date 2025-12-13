@@ -111,8 +111,11 @@ export function SimulationCard({ simulation }: SimulationCardProps) {
         </div>
 
         {/* Action Button */}
-        <Link href={`/simulation?id=${simulation.id}`}>
-          <Button className="w-full" variant={isActive ? "default" : "outline"}>
+        <Link href={isCompleted ? `/simulations/${simulation.id}/results` : `/simulation?id=${simulation.id}`}>
+          <Button
+            className="w-full"
+            variant={isActive ? "default" : isCompleted ? "secondary" : "outline"}
+          >
             {isActive ? "Riprendi" : "Visualizza"}
           </Button>
         </Link>

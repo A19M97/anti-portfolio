@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { loggers } from "@/lib/logger";
@@ -13,29 +12,9 @@ export async function GET(
 
   try {
     const { id: simulationId } = await params;
-    logger.info("Fetching simulation by ID", { simulationId });
+    logger.info("Fetching simulation by ID (public)", { simulationId });
 
-    // Check authentication
-    const { userId: clerkId } = await auth();
-
-    if (!clerkId) {
-      logger.warn("Unauthorized GET request - no clerkId");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    logger.debug("User authenticated", { clerkId });
-
-    // Get user from database
-    const user = await db.user.findUnique({
-      where: { clerkId },
-    });
-
-    if (!user) {
-      logger.error("User not found in database", undefined, { clerkId });
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Fetch simulation with all messages
+    // Fetch simulation with all messages (public access)
     const simulation = await db.simulation.findUnique({
       where: { id: simulationId },
       include: {
@@ -55,21 +34,7 @@ export async function GET(
       );
     }
 
-    // Verify ownership
-    if (simulation.userId !== user.id) {
-      logger.warn("Unauthorized access to simulation", {
-        userId: user.id,
-        simulationUserId: simulation.userId,
-        simulationId,
-      });
-      return NextResponse.json(
-        { error: "Unauthorized - You don't own this simulation" },
-        { status: 403 }
-      );
-    }
-
     logger.info("Simulation fetched successfully", {
-      userId: user.id,
       simulationId,
       messageCount: simulation.messages.length,
     });
@@ -80,6 +45,7 @@ export async function GET(
       success: true,
       simulation: {
         id: simulation.id,
+        userId: simulation.userId,
         scenarioTitle: simulation.scenarioTitle,
         scenarioDescription: simulation.scenarioDescription,
         status: simulation.status,

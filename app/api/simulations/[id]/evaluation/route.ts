@@ -159,7 +159,7 @@ function parseEvaluationResponse(responseText: string): EvaluationData {
   }
 }
 
-// GET - Retrieve existing evaluation
+// GET - Retrieve existing evaluation (public access)
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -168,29 +168,9 @@ export async function GET(
 
   try {
     const { id: simulationId } = await params;
-    logger.info("Fetching evaluation for simulation", { simulationId });
+    logger.info("Fetching evaluation for simulation (public)", { simulationId });
 
-    // Check authentication
-    const { userId: clerkId } = await auth();
-
-    if (!clerkId) {
-      logger.warn("Unauthorized GET request - no clerkId");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    logger.debug("User authenticated", { clerkId });
-
-    // Get user from database
-    const user = await db.user.findUnique({
-      where: { clerkId },
-    });
-
-    if (!user) {
-      logger.error("User not found in database", undefined, { clerkId });
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Fetch simulation with evaluation
+    // Fetch simulation with evaluation (public access)
     const simulation = await db.simulation.findUnique({
       where: { id: simulationId },
       include: {
@@ -203,19 +183,6 @@ export async function GET(
       return NextResponse.json(
         { error: "Simulation not found" },
         { status: 404 }
-      );
-    }
-
-    // Verify ownership
-    if (simulation.userId !== user.id) {
-      logger.warn("Unauthorized access to simulation", {
-        userId: user.id,
-        simulationUserId: simulation.userId,
-        simulationId,
-      });
-      return NextResponse.json(
-        { error: "Unauthorized - You don't own this simulation" },
-        { status: 403 }
       );
     }
 
@@ -233,7 +200,6 @@ export async function GET(
     }
 
     logger.info("Evaluation fetched successfully", {
-      userId: user.id,
       simulationId,
     });
 

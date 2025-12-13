@@ -45,5 +45,12 @@
         "desc": "Get a unique, non-replicable web identity."
       }
     }
+  },
+  "Dashboard": {
+    "welcomeBack": "Welcome back, {name}!",
+    "allUsers": "All Users",
+    "exploreProfiles": "Explore profiles and simulations of other users",
+    "noUsers": "No users found",
+    "namelessUser": "Nameless User"
   }
 }

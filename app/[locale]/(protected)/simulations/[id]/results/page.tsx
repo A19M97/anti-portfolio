@@ -81,6 +81,7 @@ interface SimulationMessage {
 
 interface Simulation {
   id: string;
+  userId: string;
   scenarioTitle?: string;
   completedTasks: number;
   totalTasks: number;
@@ -390,12 +391,12 @@ export default function SimulationResultsPage() {
             </AlertDescription>
           </Alert>
           <Button
-            onClick={() => router.push("/simulations")}
+            onClick={() => router.push("/dashboard")}
             variant="outline"
             className="w-full"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Torna alle simulazioni
+            Torna alla dashboard
           </Button>
         </motion.div>
       </div>
@@ -420,11 +421,11 @@ export default function SimulationResultsPage() {
             <div className="flex items-center justify-between">
               <Button
                 variant="ghost"
-                onClick={() => router.push("/simulations")}
+                onClick={() => simulation && router.push(`/users/${simulation.userId}`)}
                 className="gap-2 hover:scale-105 transition-transform"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Tutte le simulazioni
+                Profilo
               </Button>
               <div className="flex items-center gap-3">
                 <motion.div

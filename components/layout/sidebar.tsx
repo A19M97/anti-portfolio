@@ -26,31 +26,37 @@ import { LogoutButton } from "@/components/auth/logout-button"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { useLogout } from "@/hooks/useLogout";
 
-const menuItems = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Le Mie Simulazioni",
-    href: "/simulations",
-    icon: History,
-  },
-  {
-    title: "Test Page",
-    href: "/test",
-    icon: TestTube,
-  },
-]
-
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const pathname = usePathname()
   const { user } = useUser()
   const handleLogout = useLogout();
+
+  // Fetch current user's database ID
+  useEffect(() => {
+    const fetchCurrentUserId = async () => {
+      try {
+        const response = await fetch("/api/users")
+        if (response.ok) {
+          const data = await response.json()
+          // Find current user by clerk ID
+          const currentUser = data.users?.find((u: any) => u.clerkId === user?.id)
+          if (currentUser) {
+            setCurrentUserId(currentUser.id)
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch current user ID:", error)
+      }
+    }
+
+    if (user?.id) {
+      fetchCurrentUserId()
+    }
+  }, [user?.id])
 
   // Detect screen size
   useEffect(() => {
@@ -81,6 +87,19 @@ export function Sidebar() {
   if (!mounted) {
     return null
   }
+
+  const menuItems = [
+    {
+      title: "Dashboard",
+      href: "/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "Le Mie Simulazioni",
+      href: currentUserId ? `/users/${currentUserId}` : "/users/me",
+      icon: History,
+    }
+  ]
 
   return (
     <>

@@ -45,5 +45,12 @@
         "desc": "Ottieni un'identità web unica e non replicabile."
       }
     }
+  },
+  "Dashboard": {
+    "welcomeBack": "Bentornato, {name}!",
+    "allUsers": "Tutti gli Utenti",
+    "exploreProfiles": "Esplora i profili e le simulazioni degli altri utenti",
+    "noUsers": "Nessun utente trovato",
+    "namelessUser": "Utente senza nome"
   }
 }
