@@ -33,8 +33,8 @@ interface ChatContentProps {
   inputMessage: string;
   setInputMessage: (value: string) => void;
   handleSendMessage: (e: React.FormEvent) => void;
-  messagesEndRef: React.RefObject<HTMLDivElement>;
-  chatContainerRef: React.RefObject<HTMLDivElement>;
+  messagesEndRef: React.RefObject<HTMLDivElement | null>;
+  chatContainerRef: React.RefObject<HTMLDivElement | null>;
   simulationId: string | null;
   onViewResults: () => void;
 }
