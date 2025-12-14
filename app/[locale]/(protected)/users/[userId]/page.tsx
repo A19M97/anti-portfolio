@@ -81,11 +81,7 @@ export default function UserProfilePage() {
   };
 
   const handleNewSimulation = () => {
-    if (hasProfileAnalysis) {
-      router.push("/simulation");
-    } else {
-      router.push("/onboarding");
-    }
+    router.push("/onboarding");
   };
 
   const fetchUserProfile = async () => {

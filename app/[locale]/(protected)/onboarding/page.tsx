@@ -410,15 +410,7 @@ export default function OnboardingPage() {
             </Alert>
           )}
 
-          <div className="flex justify-end space-x-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push("/dashboard")}
-              disabled={isLoading}
-            >
-              {t("actions.skipForNow")}
-            </Button>
+          <div className="flex justify-end">
             <Button type="submit" disabled={!canSubmit} className="min-w-[200px]">
               {t("actions.analyzeProfile")}
             </Button>

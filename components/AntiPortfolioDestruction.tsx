@@ -302,7 +302,7 @@ export default function AntiPortfolioDestruction({ file, onComplete, autoStart =
                             {/* ANTIPORTFOLIO - Grande e colorato */}
                             <div className={`flex flex-col items-center text-center mb-8 transition-all duration-700 ${modalPhase >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                                 <div className="mb-4">
-                                    <span className="text-slate-500 text-sm font-medium tracking-widest uppercase">Benvenuto in</span>
+                                    <span className="text-slate-500 text-sm font-medium tracking-widest uppercase">Per un vero</span>
                                 </div>
                                 <h1 className="text-5xl md:text-6xl font-black tracking-tight text-center">
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-400 animate-text-shimmer">

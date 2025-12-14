@@ -182,7 +182,7 @@ export default function SimulationResultsPage() {
   // Track current section on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["overview", "metrics", "strengths", "weaknesses", "insights", "timeline"];
+      const sections = ["overview", "assessment", "metrics", "qualities", "strengths", "weaknesses", "insights", "timeline"];
       const scrollPosition = window.scrollY + 200;
 
       for (const section of sections) {
@@ -490,7 +490,9 @@ export default function SimulationResultsPage() {
             <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-hide">
               {[
                 { id: "overview", label: "Panoramica" },
+                { id: "assessment", label: "Valutazione" },
                 { id: "metrics", label: "Metriche" },
+                { id: "qualities", label: "Qualità" },
                 { id: "strengths", label: "Punti di Forza" },
                 { id: "weaknesses", label: "Miglioramenti" },
                 { id: "insights", label: "Insights" },
@@ -605,6 +607,32 @@ export default function SimulationResultsPage() {
             </motion.div>
           )}
 
+          {/* Overall Assessment - PROMINENTE */}
+          <motion.div id="assessment" variants={itemVariants}>
+            <Card className="shadow-2xl border-4 border-blue-300 dark:border-blue-700 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 hover:shadow-3xl transition-all">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
+                    <Award className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-3xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      Valutazione Complessiva
+                    </CardTitle>
+                    <CardDescription className="text-base mt-1">
+                      Sintesi della tua performance e del tuo profilo
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="prose prose-lg prose-blue dark:prose-invert max-w-none">
+                  <ReactMarkdown>{evaluation.overallAssessment}</ReactMarkdown>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
           {/* Key Metrics Grid */}
           <motion.div
             id="metrics"
@@ -658,7 +686,7 @@ export default function SimulationResultsPage() {
           </motion.div>
 
           {/* Qualities Section */}
-          <motion.div variants={itemVariants}>
+          <motion.div id="qualities" variants={itemVariants}>
             <Card className="shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader>
                 <div className="flex items-center gap-3">
@@ -772,28 +800,6 @@ export default function SimulationResultsPage() {
               )}
             </motion.div>
           )}
-
-          {/* Overall Assessment */}
-          <motion.div variants={itemVariants}>
-            <Card className="shadow-xl border-2 border-blue-200 dark:border-blue-800 hover:shadow-2xl transition-shadow">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-                    <Award className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle>Valutazione Complessiva</CardTitle>
-                    <CardDescription>Sintesi della tua performance</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="prose prose-blue dark:prose-invert max-w-none">
-                  <ReactMarkdown>{evaluation.overallAssessment}</ReactMarkdown>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
 
           {/* Simulation Timeline */}
           <motion.div id="timeline" variants={itemVariants}>

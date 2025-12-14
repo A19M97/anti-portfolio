@@ -79,7 +79,7 @@
       "role": "Ruolo",
       "seniority": "Seniority",
       "sectors": "Settori",
-      "continueSimulation": "Continua con la Simulazione →",
+      "continueSimulation": "Inizia Simulazione",
       "goToDashboard": "Vai alla Dashboard",
       "analyzeAnother": "Analizza un Altro Profilo"
     },
@@ -104,7 +104,7 @@
     },
     "desiredRole": {
       "title": "Quale ruolo vuoi ricoprire?",
-      "placeholder": "es. Frontend Developer, Product Manager, UX Designer...",
+      "placeholder": "es. Senior Frontend Developer, Junior Product Manager, Mid-level UX Designer...",
       "description": "Specifica il ruolo professionale che aspiri a ricoprire. Useremo questa informazione per generare un profilo adatto."
     },
     "modelSelection": {
