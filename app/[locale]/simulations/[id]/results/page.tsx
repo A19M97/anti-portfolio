@@ -169,11 +169,7 @@ export default function SimulationResultsPage() {
   };
 
   const handleNewSimulation = () => {
-    if (hasProfileAnalysis) {
-      router.push("/simulation");
-    } else {
-      router.push("/onboarding");
-    }
+    router.push("/onboarding");
   };
 
   // Trigger confetti for high scores

@@ -7,7 +7,10 @@ import {
   Target,
   Zap,
   Clock,
-  User
+  User,
+  FileText,
+  Users,
+  CalendarDays
 } from "lucide-react";
 import {
   VerticalTimeline,
@@ -28,12 +31,12 @@ interface SimulationTimelineProps {
 }
 
 export function SimulationTimeline({ messages, scenarioTitle }: SimulationTimelineProps) {
-  // Filter messages: exclude initial setup messages (BRIEF, TEAM, TIMELINE)
+  // Filter messages: include all context messages (BRIEF, TEAM, TIMELINE) and interaction messages
   const timelineMessages = messages.filter(msg => {
     // Include all user messages
     if (msg.role === 'user') return true;
-    // Include only TASK, CHALLENGE, FEEDBACK from assistant
-    return msg.type && ['TASK', 'CHALLENGE', 'FEEDBACK'].includes(msg.type);
+    // Include BRIEF, TEAM, TIMELINE, TASK, CHALLENGE, FEEDBACK from assistant
+    return msg.type && ['BRIEF', 'TEAM', 'TIMELINE', 'TASK', 'CHALLENGE', 'FEEDBACK'].includes(msg.type);
   });
 
   const getMessageStyle = (role: string, type?: string) => {
@@ -50,6 +53,33 @@ export function SimulationTimeline({ messages, scenarioTitle }: SimulationTimeli
 
     // Assistant messages
     switch (type) {
+      case 'BRIEF':
+        return {
+          background: 'rgb(139, 92, 246)', // violet-500
+          icon: FileText,
+          iconStyle: { background: 'rgb(139, 92, 246)', color: '#fff' },
+          contentStyle: { background: 'rgb(245, 243, 255)', color: '#1f2937', border: '2px solid rgb(139, 92, 246)' },
+          contentArrowStyle: { borderRight: '7px solid rgb(139, 92, 246)' },
+          position: 'left' as const,
+        };
+      case 'TEAM':
+        return {
+          background: 'rgb(20, 184, 166)', // teal-500
+          icon: Users,
+          iconStyle: { background: 'rgb(20, 184, 166)', color: '#fff' },
+          contentStyle: { background: 'rgb(240, 253, 250)', color: '#1f2937', border: '2px solid rgb(20, 184, 166)' },
+          contentArrowStyle: { borderRight: '7px solid rgb(20, 184, 166)' },
+          position: 'left' as const,
+        };
+      case 'TIMELINE':
+        return {
+          background: 'rgb(236, 72, 153)', // pink-500
+          icon: CalendarDays,
+          iconStyle: { background: 'rgb(236, 72, 153)', color: '#fff' },
+          contentStyle: { background: 'rgb(253, 242, 248)', color: '#1f2937', border: '2px solid rgb(236, 72, 153)' },
+          contentArrowStyle: { borderRight: '7px solid rgb(236, 72, 153)' },
+          position: 'left' as const,
+        };
       case 'CHALLENGE':
         return {
           background: 'rgb(249, 115, 22)', // orange-500
@@ -95,6 +125,12 @@ export function SimulationTimeline({ messages, scenarioTitle }: SimulationTimeli
     }
 
     switch (type) {
+      case 'BRIEF':
+        return 'Brief della Simulazione';
+      case 'TEAM':
+        return 'Il tuo Team';
+      case 'TIMELINE':
+        return 'Timeline del Progetto';
       case 'CHALLENGE':
         return 'Sfida';
       case 'TASK':
