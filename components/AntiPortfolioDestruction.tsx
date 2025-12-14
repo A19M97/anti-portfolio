@@ -338,7 +338,7 @@ export default function AntiPortfolioDestruction({ file, onComplete, autoStart =
                             {/* Messaggi - appaiono in sequenza */}
                             <div className="text-center mb-8">
                                 <p className={`text-slate-400 text-lg mb-4 transition-all duration-700 ${modalPhase >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                                    Il tuo CV? <span className="text-slate-300 font-semibold">Non ci serve.</span>
+                                    Il tuo CV <span className="text-slate-300 font-semibold">non ci serve.</span>
                                 </p>
 
                                 <p className={`text-xl text-white font-medium mb-2 transition-all duration-700 delay-100 ${modalPhase >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>

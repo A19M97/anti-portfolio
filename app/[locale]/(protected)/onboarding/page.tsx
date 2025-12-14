@@ -221,27 +221,6 @@ export default function OnboardingPage() {
                   <Button onClick={() => router.push("/simulation")} size="lg" className="flex-1 min-w-[200px]">
                     {t("success.continueSimulation")}
                   </Button>
-                  <Button onClick={() => router.push("/dashboard")} variant="outline">
-                    {t("success.goToDashboard")}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setStatus("idle");
-                      setAnalysisResult(null);
-                      setPrompt(null);
-                      setRawAnalysis(null);
-                      setClaudeResponse(null);
-                      setFiles([]);
-                      setFreeText("");
-                      setDesiredRole("");
-                      setUsedModel(null);
-                      setShowDestruction(false);
-                      setIsAnimationComplete(false);
-                    }}
-                  >
-                    {t("success.analyzeAnother")}
-                  </Button>
                 </div>
               </CardContent>
             </Card>

@@ -229,18 +229,11 @@ export default function UserProfilePage() {
 
       {/* New Simulation Button or CTA */}
       <div className="mb-6 flex justify-end">
-        {isOwnProfile ? (
+        {isOwnProfile && (
           <Button size="lg" className="gap-2" onClick={handleNewSimulation}>
             <Plus className="h-5 w-5" />
             Nuova Simulazione
           </Button>
-        ) : (
-          <Link href="/sign-in">
-            <Button size="lg" variant="outline" className="gap-2">
-              <LogIn className="h-5 w-5" />
-              Accedi per creare simulazioni
-            </Button>
-          </Link>
         )}
       </div>
 
