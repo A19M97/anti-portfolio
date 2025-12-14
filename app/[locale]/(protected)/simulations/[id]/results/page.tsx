@@ -182,7 +182,7 @@ export default function SimulationResultsPage() {
   // Track current section on scroll
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["overview", "assessment", "metrics", "qualities", "strengths", "weaknesses", "insights", "timeline"];
+      const sections = ["overview", "strengths", "weaknesses", "qualities", "insights", "timeline"];
       const scrollPosition = window.scrollY + 200;
 
       for (const section of sections) {
@@ -436,370 +436,334 @@ export default function SimulationResultsPage() {
   return (
     <Tooltip.Provider>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        {/* Sticky Header */}
-        <motion.div
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50"
-          initial={{ y: -100 }}
-          animate={{ y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <Button
-                variant="ghost"
-                onClick={() => simulation && router.push(`/users/${simulation.userId}`)}
-                className="gap-2 hover:scale-105 transition-transform"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Profilo
-              </Button>
-              <div className="flex items-center gap-3">
-                <motion.div
-                  className="flex items-center gap-2"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
-                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Completata
-                  </span>
-                </motion.div>
+        {/* Sticky Header + Navigation */}
+        <div className="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
                 <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleShare}
+                  variant="ghost"
+                  onClick={() => simulation && router.push(`/users/${simulation.userId}`)}
                   className="gap-2 hover:scale-105 transition-transform"
                 >
-                  <Share2 className="w-4 h-4" />
-                  Condividi
+                  <ArrowLeft className="w-4 h-4" />
+                  Profilo
                 </Button>
+                <div className="flex items-center gap-3">
+                  <motion.div
+                    className="flex items-center gap-2"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <CheckCircle2 className="w-5 h-5 text-green-600" />
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      Completata
+                    </span>
+                  </motion.div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleShare}
+                    className="gap-2 hover:scale-105 transition-transform"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Condividi
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Quick Navigation */}
-        <motion.div
-          className="sticky top-[73px] z-40 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-hide">
-              {[
-                { id: "overview", label: "Panoramica" },
-                { id: "assessment", label: "Valutazione" },
-                { id: "metrics", label: "Metriche" },
-                { id: "qualities", label: "Qualità" },
-                { id: "strengths", label: "Punti di Forza" },
-                { id: "weaknesses", label: "Miglioramenti" },
-                { id: "insights", label: "Insights" },
-                { id: "timeline", label: "Timeline" }
-              ].map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => scrollToSection(section.id)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                    currentSection === section.id
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  {section.label}
-                </button>
-              ))}
+          {/* Quick Navigation */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-hide">
+                {[
+                  { id: "overview", label: "Riepilogo" },
+                  { id: "strengths", label: "Forze" },
+                  { id: "weaknesses", label: "Miglioramenti" },
+                  { id: "qualities", label: "Qualità" },
+                  { id: "insights", label: "Insights" },
+                  { id: "timeline", label: "Timeline" }
+                ].map((section) => (
+                  <button
+                    key={section.id}
+                    onClick={() => scrollToSection(section.id)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                      currentSection === section.id
+                        ? "bg-blue-600 text-white"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    }`}
+                  >
+                    {section.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
         {/* Main Content */}
         <motion.div
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8"
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
 
-          {/* Hero Section */}
+          {/* Compact Hero */}
           <motion.div
             id="overview"
-            className="text-center space-y-4 py-8"
+            className="text-center space-y-3 py-4"
             variants={itemVariants}
           >
-            <motion.div
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-sm font-medium shadow-lg"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Award className="w-4 h-4" />
-              Valutazione Completa
-            </motion.div>
             <motion.h1
-              className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white"
+              className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
             >
               {simulation.scenarioTitle || "Risultati della Simulazione"}
             </motion.h1>
             <motion.p
-              className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+              className="text-sm text-gray-500 dark:text-gray-400"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.3 }}
             >
-              Ecco l'analisi dettagliata della tua performance basata su {simulation.completedTasks} decisioni completate
+              {simulation.completedTasks} decisioni completate
             </motion.p>
           </motion.div>
 
-          {/* Overall Score Card */}
-          {evaluation.overallScore && (
-            <motion.div variants={scaleVariants}>
-              <Card className="overflow-hidden border-2 shadow-xl hover:shadow-2xl transition-shadow">
-                <div className={`h-2 bg-gradient-to-r ${getScoreGradient(evaluation.overallScore)}`} />
-                <CardHeader className="text-center pb-4">
-                  <CardTitle className="text-2xl">Punteggio Complessivo</CardTitle>
-                </CardHeader>
-                <CardContent className="text-center pb-8">
-                  <div className="relative inline-block">
-                    <svg className="w-48 h-48 transform -rotate-90">
-                      <circle
-                        cx="96"
-                        cy="96"
-                        r="88"
-                        stroke="currentColor"
-                        strokeWidth="12"
-                        fill="none"
-                        className="text-gray-200 dark:text-gray-700"
-                      />
-                      <motion.circle
-                        cx="96"
-                        cy="96"
-                        r="88"
-                        stroke="url(#gradient)"
-                        strokeWidth="12"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeDasharray={`${2 * Math.PI * 88}`}
-                        initial={{ strokeDashoffset: 2 * Math.PI * 88 }}
-                        animate={{ strokeDashoffset: 2 * Math.PI * 88 * (1 - evaluation.overallScore / 100) }}
-                        transition={{ duration: 2, delay: 0.5 }}
-                      />
-                      <defs>
-                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" className="text-blue-500" stopColor="currentColor" />
-                          <stop offset="100%" className="text-purple-600" stopColor="currentColor" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <AnimatedCounter
-                        value={evaluation.overallScore}
-                        className={`text-5xl font-bold ${getScoreColor(evaluation.overallScore)}`}
-                      />
-                      <span className="text-sm text-gray-500 dark:text-gray-400">/ 100</span>
+          {/* EXECUTIVE SUMMARY - Dashboard principale */}
+          <motion.div variants={scaleVariants}>
+            <Card className="overflow-hidden shadow-2xl border-2 border-gray-200 dark:border-gray-700">
+              <div className={`h-1.5 bg-gradient-to-r ${evaluation.overallScore ? getScoreGradient(evaluation.overallScore) : 'from-blue-500 to-purple-600'}`} />
+
+              <CardContent className="p-6 md:p-8">
+                {/* Score + Assessment Layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+
+                  {/* Score Column */}
+                  {evaluation.overallScore && (
+                    <div className="lg:col-span-1 flex flex-col items-center justify-center">
+                      <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wide">
+                        Punteggio Anti-Portfolio
+                      </div>
+                      <div className="relative w-40 h-40 md:w-48 md:h-48">
+                        <svg
+                          className="w-full h-full transform -rotate-90"
+                          viewBox="0 0 160 160"
+                        >
+                          <circle
+                            cx="80"
+                            cy="80"
+                            r="72"
+                            stroke="currentColor"
+                            strokeWidth="10"
+                            fill="none"
+                            className="text-gray-200 dark:text-gray-700"
+                          />
+                          <motion.circle
+                            cx="80"
+                            cy="80"
+                            r="72"
+                            stroke="url(#gradient)"
+                            strokeWidth="10"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeDasharray={`${2 * Math.PI * 72}`}
+                            initial={{ strokeDashoffset: 2 * Math.PI * 72 }}
+                            animate={{ strokeDashoffset: 2 * Math.PI * 72 * (1 - evaluation.overallScore / 100) }}
+                            transition={{ duration: 2, delay: 0.3 }}
+                          />
+                          <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" className="text-blue-500" stopColor="currentColor" />
+                              <stop offset="100%" className="text-purple-600" stopColor="currentColor" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <AnimatedCounter
+                            value={evaluation.overallScore}
+                            className={`text-4xl md:text-5xl font-bold ${getScoreColor(evaluation.overallScore)}`}
+                          />
+                          <span className="text-xs text-gray-500 dark:text-gray-400">/ 100</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Assessment Column */}
+                  <div className={evaluation.overallScore ? "lg:col-span-2" : "lg:col-span-3"}>
+                    <div className="flex items-center gap-2 mb-4">
+                      <Award className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                        Valutazione Complessiva
+                      </h2>
+                    </div>
+                    <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none text-gray-700 dark:text-gray-300">
+                      <ReactMarkdown>{evaluation.overallAssessment}</ReactMarkdown>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {/* Overall Assessment - PROMINENTE */}
-          <motion.div id="assessment" variants={itemVariants}>
-            <Card className="shadow-2xl border-4 border-blue-300 dark:border-blue-700 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 hover:shadow-3xl transition-all">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-3xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                      Valutazione Complessiva
-                    </CardTitle>
-                    <CardDescription className="text-base mt-1">
-                      Sintesi della tua performance e del tuo profilo
-                    </CardDescription>
-                  </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="prose prose-lg prose-blue dark:prose-invert max-w-none">
-                  <ReactMarkdown>{evaluation.overallAssessment}</ReactMarkdown>
+
+                {/* Metrics Row - Compact */}
+                <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {evaluation.leadershipScore !== null && evaluation.leadershipScore !== undefined && (
+                      <CompactMetric
+                        icon={Users}
+                        label="Leadership"
+                        score={evaluation.leadershipScore}
+                        color="blue"
+                      />
+                    )}
+                    {evaluation.technicalScore !== null && evaluation.technicalScore !== undefined && (
+                      <CompactMetric
+                        icon={Brain}
+                        label="Tecnico"
+                        score={evaluation.technicalScore}
+                        color="purple"
+                      />
+                    )}
+                    {evaluation.communicationScore !== null && evaluation.communicationScore !== undefined && (
+                      <CompactMetric
+                        icon={MessageSquare}
+                        label="Comunicazione"
+                        score={evaluation.communicationScore}
+                        color="green"
+                      />
+                    )}
+                    {evaluation.adaptabilityScore !== null && evaluation.adaptabilityScore !== undefined && (
+                      <CompactMetric
+                        icon={Zap}
+                        label="Adattabilità"
+                        score={evaluation.adaptabilityScore}
+                        color="orange"
+                      />
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Key Metrics Grid */}
-          <motion.div
-            id="metrics"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-            variants={containerVariants}
-          >
-            {evaluation.leadershipScore !== null && evaluation.leadershipScore !== undefined && (
-              <motion.div variants={itemVariants}>
-                <MetricCard
-                  icon={Users}
-                  title="Leadership"
-                  score={evaluation.leadershipScore}
-                  color="blue"
-                  description="Capacità di guidare e motivare il team"
-                />
-              </motion.div>
-            )}
-            {evaluation.technicalScore !== null && evaluation.technicalScore !== undefined && (
-              <motion.div variants={itemVariants}>
-                <MetricCard
-                  icon={Brain}
-                  title="Competenze Tecniche"
-                  score={evaluation.technicalScore}
-                  color="purple"
-                  description="Conoscenze e competenze specifiche del dominio"
-                />
-              </motion.div>
-            )}
-            {evaluation.communicationScore !== null && evaluation.communicationScore !== undefined && (
-              <motion.div variants={itemVariants}>
-                <MetricCard
-                  icon={MessageSquare}
-                  title="Comunicazione"
-                  score={evaluation.communicationScore}
-                  color="green"
-                  description="Capacità di comunicare in modo efficace"
-                />
-              </motion.div>
-            )}
-            {evaluation.adaptabilityScore !== null && evaluation.adaptabilityScore !== undefined && (
-              <motion.div variants={itemVariants}>
-                <MetricCard
-                  icon={Zap}
-                  title="Adattabilità"
-                  score={evaluation.adaptabilityScore}
-                  color="orange"
-                  description="Flessibilità e capacità di adattamento"
-                />
-              </motion.div>
-            )}
-          </motion.div>
+          {/* DETAILED ANALYSIS - Collapsible Sections */}
+          <motion.div className="space-y-3" variants={itemVariants}>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Analisi Dettagliata</h2>
 
-          {/* Qualities Section */}
-          <motion.div id="qualities" variants={itemVariants}>
-            <Card className="shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-                    <BarChart3 className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle>Qualità Professionali</CardTitle>
-                    <CardDescription>Le competenze chiave emerse dalla simulazione</CardDescription>
-                  </div>
+            {/* Strengths & Weaknesses Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <CollapsibleSection
+                id="strengths"
+                title="Punti di Forza"
+                icon={TrendingUp}
+                iconColor="text-green-600 dark:text-green-400"
+                iconBg="bg-green-100 dark:bg-green-900/30"
+                count={evaluation.strengths.length}
+                defaultOpen={true}
+              >
+                <div className="space-y-4">
+                  {evaluation.strengths.map((strength, index) => (
+                    <ExpandableStrengthCard key={index} strength={strength} index={index} />
+                  ))}
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
+              </CollapsibleSection>
+
+              <CollapsibleSection
+                id="weaknesses"
+                title="Aree di Miglioramento"
+                icon={Target}
+                iconColor="text-orange-600 dark:text-orange-400"
+                iconBg="bg-orange-100 dark:bg-orange-900/30"
+                count={evaluation.weaknesses.length}
+                defaultOpen={true}
+              >
+                <div className="space-y-4">
+                  {evaluation.weaknesses.map((weakness, index) => (
+                    <ExpandableWeaknessCard key={index} weakness={weakness} index={index} />
+                  ))}
+                </div>
+              </CollapsibleSection>
+            </div>
+
+            {/* Qualities Section */}
+            <CollapsibleSection
+              id="qualities"
+              title="Qualità Professionali"
+              icon={BarChart3}
+              iconColor="text-blue-600 dark:text-blue-400"
+              iconBg="bg-blue-100 dark:bg-blue-900/30"
+              count={evaluation.qualities.length}
+              defaultOpen={false}
+            >
+              <div className="space-y-6">
                 {evaluation.qualities.map((quality, index) => (
                   <AnimatedQualityBar key={index} quality={quality} delay={index * 0.1} />
                 ))}
-              </CardContent>
-            </Card>
-          </motion.div>
+              </div>
+            </CollapsibleSection>
 
-          {/* Strengths Section */}
-          <motion.div id="strengths" variants={itemVariants}>
-            <Card className="shadow-lg border-l-4 border-l-green-500 hover:shadow-xl transition-shadow">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                    <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-green-900 dark:text-green-100">Punti di Forza</CardTitle>
-                    <CardDescription>Le tue competenze distintive</CardDescription>
-                  </div>
+            {/* Insights Section */}
+            {(evaluation.leadershipStyle || evaluation.decisionMaking || evaluation.communicationStyle || evaluation.problemSolving) && (
+              <CollapsibleSection
+                id="insights"
+                title="Insights Comportamentali"
+                icon={Lightbulb}
+                iconColor="text-purple-600 dark:text-purple-400"
+                iconBg="bg-purple-100 dark:bg-purple-900/30"
+                count={[evaluation.leadershipStyle, evaluation.decisionMaking, evaluation.communicationStyle, evaluation.problemSolving].filter(Boolean).length}
+                defaultOpen={false}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {evaluation.leadershipStyle && (
+                    <InsightCard
+                      icon={Users}
+                      title="Stile di Leadership"
+                      content={evaluation.leadershipStyle}
+                      color="blue"
+                    />
+                  )}
+                  {evaluation.decisionMaking && (
+                    <InsightCard
+                      icon={Brain}
+                      title="Decision Making"
+                      content={evaluation.decisionMaking}
+                      color="purple"
+                    />
+                  )}
+                  {evaluation.communicationStyle && (
+                    <InsightCard
+                      icon={MessageSquare}
+                      title="Stile Comunicativo"
+                      content={evaluation.communicationStyle}
+                      color="green"
+                    />
+                  )}
+                  {evaluation.problemSolving && (
+                    <InsightCard
+                      icon={Lightbulb}
+                      title="Problem Solving"
+                      content={evaluation.problemSolving}
+                      color="yellow"
+                    />
+                  )}
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {evaluation.strengths.map((strength, index) => (
-                  <ExpandableStrengthCard key={index} strength={strength} index={index} />
-                ))}
-              </CardContent>
-            </Card>
+              </CollapsibleSection>
+            )}
           </motion.div>
-
-          {/* Weaknesses Section */}
-          <motion.div id="weaknesses" variants={itemVariants}>
-            <Card className="shadow-lg border-l-4 border-l-orange-500 hover:shadow-xl transition-shadow">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-                    <Target className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-orange-900 dark:text-orange-100">Aree di Miglioramento</CardTitle>
-                    <CardDescription>Opportunità di crescita professionale</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {evaluation.weaknesses.map((weakness, index) => (
-                  <ExpandableWeaknessCard key={index} weakness={weakness} index={index} />
-                ))}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Insights Grid */}
-          {(evaluation.leadershipStyle || evaluation.decisionMaking || evaluation.communicationStyle || evaluation.problemSolving) && (
-            <motion.div
-              id="insights"
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
-              variants={containerVariants}
-            >
-              {evaluation.leadershipStyle && (
-                <motion.div variants={itemVariants}>
-                  <InsightCard
-                    icon={Users}
-                    title="Stile di Leadership"
-                    content={evaluation.leadershipStyle}
-                    color="blue"
-                  />
-                </motion.div>
-              )}
-              {evaluation.decisionMaking && (
-                <motion.div variants={itemVariants}>
-                  <InsightCard
-                    icon={Brain}
-                    title="Decision Making"
-                    content={evaluation.decisionMaking}
-                    color="purple"
-                  />
-                </motion.div>
-              )}
-              {evaluation.communicationStyle && (
-                <motion.div variants={itemVariants}>
-                  <InsightCard
-                    icon={MessageSquare}
-                    title="Stile Comunicativo"
-                    content={evaluation.communicationStyle}
-                    color="green"
-                  />
-                </motion.div>
-              )}
-              {evaluation.problemSolving && (
-                <motion.div variants={itemVariants}>
-                  <InsightCard
-                    icon={Lightbulb}
-                    title="Problem Solving"
-                    content={evaluation.problemSolving}
-                    color="yellow"
-                  />
-                </motion.div>
-              )}
-            </motion.div>
-          )}
 
           {/* Simulation Timeline */}
           <motion.div id="timeline" variants={itemVariants}>
@@ -863,6 +827,102 @@ function AnimatedCounter({ value, className }: { value: number; className?: stri
   }, [value]);
 
   return <span className={className}>{count}</span>;
+}
+
+function CompactMetric({
+  icon: Icon,
+  label,
+  score,
+  color
+}: {
+  icon: any;
+  label: string;
+  score: number;
+  color: "blue" | "purple" | "green" | "orange";
+}) {
+  const colorClasses = {
+    blue: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20",
+    purple: "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20",
+    green: "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20",
+    orange: "text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20",
+  }[color];
+
+  return (
+    <div className="flex items-center gap-3">
+      <div className={`p-2 rounded-lg ${colorClasses.split(' ').slice(2).join(' ')}`}>
+        <Icon className={`w-4 h-4 ${colorClasses.split(' ').slice(0, 2).join(' ')}`} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{label}</div>
+        <div className={`text-lg font-bold ${colorClasses.split(' ').slice(0, 2).join(' ')}`}>
+          {score}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CollapsibleSection({
+  id,
+  title,
+  icon: Icon,
+  iconColor,
+  iconBg,
+  count,
+  defaultOpen = false,
+  children
+}: {
+  id: string;
+  title: string;
+  icon: any;
+  iconColor: string;
+  iconBg: string;
+  count: number;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <Card className="overflow-hidden shadow-md hover:shadow-lg transition-all">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+        id={id}
+      >
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-lg ${iconBg}`}>
+            <Icon className={`w-5 h-5 ${iconColor}`} />
+          </div>
+          <div className="text-left">
+            <h3 className="font-semibold text-gray-900 dark:text-white">{title}</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{count} elementi</p>
+          </div>
+        </div>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <ChevronDown className="w-5 h-5 text-gray-400" />
+        </motion.div>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <CardContent className="pt-0 pb-6">
+              {children}
+            </CardContent>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Card>
+  );
 }
 
 function MetricCard({
