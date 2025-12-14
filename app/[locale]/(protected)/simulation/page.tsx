@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import { ContextSidebar } from "@/components/simulation/context-sidebar";
 import { MobileContextTabs } from "@/components/simulation/mobile-context-tabs";
+import { IntroModal } from "@/components/simulation/intro-modal";
 import {Textarea} from "@/components/ui/textarea";
 
 interface ChatMessage {
@@ -174,6 +175,7 @@ export default function SimulationPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const hasLoadedRef = useRef(false);
+  const [showIntroModal, setShowIntroModal] = useState(false);
 
   // Load scenario on mount
   useEffect(() => {
@@ -189,6 +191,17 @@ export default function SimulationPage() {
   useEffect(() => {
     scrollToBottom();
   }, [chatMessages]);
+
+  // Show intro modal on first load (not when resuming)
+  useEffect(() => {
+    if (status === "ready" && !simulationIdFromUrl) {
+      // Check if this is the first time (no user messages yet)
+      const hasUserMessages = chatMessages.some((msg) => msg.role === "user");
+      if (!hasUserMessages) {
+        setShowIntroModal(true);
+      }
+    }
+  }, [status, chatMessages, simulationIdFromUrl]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -510,6 +523,13 @@ export default function SimulationPage() {
           />
         </div>
       </div>
+
+      {/* Intro Modal - Shows on first load */}
+      <IntroModal
+        open={showIntroModal}
+        onOpenChange={setShowIntroModal}
+        messages={chatMessages}
+      />
     </div>
   );
 }
