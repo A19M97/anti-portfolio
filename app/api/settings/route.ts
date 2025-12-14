@@ -23,6 +23,19 @@ export async function GET() {
 
     logger.debug("User authenticated", { clerkId });
 
+    // Check if user is admin
+    const userIsAdmin = await isAdminByClerkId(clerkId);
+
+    if (!userIsAdmin) {
+      logger.warn("Forbidden GET request - user is not admin", { clerkId });
+      return NextResponse.json(
+        { error: "Forbidden - Admin access required" },
+        { status: 403 }
+      );
+    }
+
+    logger.debug("User is admin", { clerkId });
+
     // Get default Claude model
     const defaultModel = await getDefaultClaudeModel();
 
