@@ -31,15 +31,15 @@ export function SimulationCard({ simulation }: SimulationCardProps) {
   const statusConfig = {
     active: {
       badge: "Attivo",
-      variant: "default" as const,
+      variant: "secondary" as const,
       icon: PlayCircle,
-      color: "text-green-600",
+      color: "text-blue-600",
     },
     completed: {
       badge: "Completato",
-      variant: "secondary" as const,
+      variant: "default" as const,
       icon: CheckCircle2,
-      color: "text-blue-600",
+      color: "text-green-600",
     },
     abandoned: {
       badge: "Abbandonato",
@@ -88,9 +88,9 @@ export function SimulationCard({ simulation }: SimulationCardProps) {
             <div
               className={`h-full transition-all ${
                 isCompleted
-                  ? "bg-blue-600"
-                  : isActive
                   ? "bg-green-600"
+                  : isActive
+                  ? "bg-blue-600"
                   : "bg-gray-400"
               }`}
               style={{ width: `${progress}%` }}
@@ -114,7 +114,7 @@ export function SimulationCard({ simulation }: SimulationCardProps) {
         <Link href={isCompleted ? `/simulations/${simulation.id}/results` : `/simulation?id=${simulation.id}`}>
           <Button
             className="w-full"
-            variant={isActive ? "default" : isCompleted ? "secondary" : "outline"}
+            variant={isActive ? "secondary" : isCompleted ? "default" : "outline"}
           >
             {isActive ? "Riprendi" : "Visualizza"}
           </Button>
