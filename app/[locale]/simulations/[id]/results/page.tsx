@@ -157,9 +157,14 @@ export default function SimulationResultsPage() {
           (pa: any) => pa.analysisStatus === "completed"
         );
         setHasProfileAnalysis(completedAnalyses.length > 0);
+      } else if (response.status === 401) {
+        // User is not authenticated - this is fine for public view
+        setHasProfileAnalysis(false);
       }
     } catch (err) {
       console.error("Error checking profile analysis:", err);
+      // On error, assume no profile analysis
+      setHasProfileAnalysis(false);
     }
   };
 
@@ -234,6 +239,7 @@ export default function SimulationResultsPage() {
 
   const loadResults = async () => {
     try {
+      debugger;
       setState("loading");
       setError(null);
 
@@ -264,11 +270,18 @@ export default function SimulationResultsPage() {
         }
       }
 
-      // If no evaluation exists, generate it
+      // If no evaluation exists, try to generate it (requires authentication)
       setState("generating");
       const generateResponse = await fetch(`/api/simulations/${simulationId}/evaluation`, {
         method: "POST",
       });
+
+      if (generateResponse.status === 401) {
+        // User is not authenticated - cannot generate evaluation
+        setError("La valutazione non è ancora stata generata. Effettua il login per generarla.");
+        setState("error");
+        return;
+      }
 
       if (!generateResponse.ok) {
         throw new Error("Failed to generate evaluation");

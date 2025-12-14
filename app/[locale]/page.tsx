@@ -72,9 +72,9 @@ export default function HomePage() {
                       {t('signIn')}
                     </Button>
                   </Link>
-                  <Link href="/sign-up">
+                  <Link href="/dashboard">
                     <Button className="rounded-full bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200">
-                      {t('signUp')}
+                      Dashboard
                     </Button>
                   </Link>
                 </div>

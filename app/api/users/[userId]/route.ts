@@ -16,24 +16,18 @@ export async function GET(
 
     logger.info("Fetching user details", { targetUserId });
 
-    // Check authentication
+    // Check authentication (optional for public access)
     const { userId: clerkId } = await auth();
 
-    if (!clerkId) {
-      logger.warn("Unauthorized GET request - no clerkId");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    logger.debug("Auth check", { isAuthenticated: !!clerkId });
 
-    logger.debug("User authenticated", { clerkId });
-
-    // Get logged-in user
-    const loggedInUser = await db.user.findUnique({
-      where: { clerkId }
-    });
-
-    if (!loggedInUser) {
-      logger.error("Logged-in user not found in database", undefined, { clerkId });
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    // Get logged-in user (null if not authenticated)
+    let loggedInUser = null;
+    if (clerkId) {
+      loggedInUser = await db.user.findUnique({
+        where: { clerkId }
+      });
+      logger.debug("User authenticated", { clerkId, loggedInUserId: loggedInUser?.id });
     }
 
     // Fetch target user with simulations
@@ -65,9 +59,9 @@ export async function GET(
     }
 
     // Check if logged-in user is viewing their own profile
-    const isOwnProfile = loggedInUser.id === targetUserId;
+    const isOwnProfile = loggedInUser ? loggedInUser.id === targetUserId : false;
 
-    logger.debug("Profile ownership check", { isOwnProfile, loggedInUserId: loggedInUser.id, targetUserId });
+    logger.debug("Profile ownership check", { isOwnProfile, loggedInUserId: loggedInUser?.id, targetUserId });
 
     // Filter simulations based on ownership
     const filteredSimulations = targetUser.simulations.filter(sim => {
@@ -130,7 +124,7 @@ export async function GET(
         firstName,
         lastName,
         fullName: targetUser.name || "Utente senza nome",
-        email: targetUser.email,
+        email: isOwnProfile ? targetUser.email : null,
         createdAt: targetUser.createdAt
       },
       simulations: formattedSimulations,

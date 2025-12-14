@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SimulationCard } from "@/components/simulations/simulation-card";
 import { Link } from "@/i18n/routing";
-import { ArrowLeft, Loader2, User, Award, Plus, Activity } from "lucide-react";
+import { ArrowLeft, Loader2, User, Award, Plus, Activity, LogIn } from "lucide-react";
 import { toast } from "sonner";
 
 interface Simulation {
@@ -41,6 +42,7 @@ export default function UserProfilePage() {
   const params = useParams();
   const router = useRouter();
   const userId = params.userId as string;
+  const { userId: currentUserId } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -126,11 +128,11 @@ export default function UserProfilePage() {
       <div className="p-8">
         <Button
           variant="ghost"
-          onClick={() => router.push("/dashboard")}
+          onClick={() => router.push(currentUserId ? "/dashboard" : "/")}
           className="mb-4"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Torna alla Dashboard
+          {currentUserId ? "Torna alla Dashboard" : "Torna alla Home"}
         </Button>
         <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg">
           {error || "Utente non trovato"}
@@ -151,11 +153,11 @@ export default function UserProfilePage() {
       <div className="mb-6">
         <Button
           variant="ghost"
-          onClick={() => router.push("/dashboard")}
+          onClick={() => router.push(currentUserId ? "/dashboard" : "/")}
           className="mb-4"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Torna alla Dashboard
+          {currentUserId ? "Torna alla Dashboard" : "Torna alla Home"}
         </Button>
       </div>
 
@@ -225,15 +227,22 @@ export default function UserProfilePage() {
         </CardContent>
       </Card>
 
-      {/* New Simulation Button - Only for own profile */}
-      {isOwnProfile && (
-        <div className="mb-6 flex justify-end">
+      {/* New Simulation Button or CTA */}
+      <div className="mb-6 flex justify-end">
+        {isOwnProfile ? (
           <Button size="lg" className="gap-2" onClick={handleNewSimulation}>
             <Plus className="h-5 w-5" />
             Nuova Simulazione
           </Button>
-        </div>
-      )}
+        ) : (
+          <Link href="/sign-in">
+            <Button size="lg" variant="outline" className="gap-2">
+              <LogIn className="h-5 w-5" />
+              Accedi per creare simulazioni
+            </Button>
+          </Link>
+        )}
+      </div>
 
       {/* Active Simulations - Only for own profile */}
       {isOwnProfile && activeSimulations.length > 0 && (

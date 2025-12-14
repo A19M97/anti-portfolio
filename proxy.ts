@@ -10,7 +10,16 @@ const isPublicRoute = createRouteMatcher([
   '/:locale/sign-up(.*)',
   '/sign-in(.*)',
   '/sign-up(.*)',
-  '/api/webhooks(.*)'
+  '/api/webhooks(.*)',
+  // Route pubbliche per dashboard, profili e risultati
+  '/:locale/dashboard',
+  '/dashboard',
+  '/:locale/users/:path*',
+  '/users/:path*',
+  '/:locale/simulations/:path*/results',
+  '/simulations/:path*/results',
+  '/api/feed',
+  '/api/:path*'
 ]);
 
 const intlMiddleware = createMiddleware(routing);
