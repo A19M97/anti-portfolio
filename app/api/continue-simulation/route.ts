@@ -195,12 +195,48 @@ export async function POST(req: Request) {
       shouldBeChallenge,
     });
 
+    // Check if this is the final task completion
+    const newCompletedTasks = simulation.completedTasks + 1;
+    const isCompleted = newCompletedTasks >= simulation.totalTasks;
+
+    // If simulation is completed, don't generate AI response - just mark as complete
+    if (isCompleted) {
+      logger.info("Simulation completed - not generating AI response", {
+        completedTasks: newCompletedTasks,
+        totalTasks: simulation.totalTasks,
+      });
+
+      await db.simulation.update({
+        where: { id: simulation.id },
+        data: {
+          completedTasks: newCompletedTasks,
+          currentTaskIndex: simulation.currentTaskIndex + 1,
+          status: "completed",
+          completedAt: new Date(),
+        },
+      });
+
+      logger.info("Simulation marked as completed", {
+        simulationId: simulation.id,
+      });
+
+      return NextResponse.json({
+        success: true,
+        isCompleted: true,
+        simulation: {
+          completedTasks: newCompletedTasks,
+          totalTasks: simulation.totalTasks,
+          isCompleted: true,
+        },
+      });
+    }
+
     // Build system prompt for continuation
     const systemPrompt = `Sei un simulatore di scenari professionali. Stai continuando una simulazione interattiva.
 
 CONTESTO:
 - L'utente ha risposto a un task/decisione
-- Task completati: ${simulation.completedTasks + 1}/${simulation.totalTasks}
+- Task completati: ${newCompletedTasks}/${simulation.totalTasks}
 - Mantieni coerenza con lo scenario e le decisioni precedenti
 
 ${shouldBeChallenge ?
@@ -217,10 +253,6 @@ FORMATO RISPOSTA:
 1. Breve feedback (1-2 frasi)
 2. Conseguenze immediate
 3. ${shouldBeChallenge ? 'SFIDA' : 'Task'} successivo
-
-${simulation.completedTasks + 1 >= simulation.totalTasks ?
-  "NOTA: Ultima decisione. Concludi con riepilogo finale conciso." :
-  ""}
 
 **MASSIMA CONCISIONE**: Solo info necessarie + minimo contesto. Tono professionale e diretto.`;
 
@@ -275,23 +307,19 @@ ${simulation.completedTasks + 1 >= simulation.totalTasks ?
     });
 
     // Update simulation progress
-    const newCompletedTasks = simulation.completedTasks + 1;
-    const isCompleted = newCompletedTasks >= simulation.totalTasks;
-
     await db.simulation.update({
       where: { id: simulation.id },
       data: {
         completedTasks: newCompletedTasks,
         currentTaskIndex: simulation.currentTaskIndex + 1,
-        status: isCompleted ? "completed" : "active",
-        completedAt: isCompleted ? new Date() : undefined,
+        status: "active",
       },
     });
 
     logger.info("Simulation progress updated", {
       completedTasks: newCompletedTasks,
       totalTasks: simulation.totalTasks,
-      isCompleted,
+      isCompleted: false,
     });
 
     logComplete();
@@ -306,7 +334,7 @@ ${simulation.completedTasks + 1 >= simulation.totalTasks ?
       simulation: {
         completedTasks: newCompletedTasks,
         totalTasks: simulation.totalTasks,
-        isCompleted,
+        isCompleted: false,
       },
       usage: {
         inputTokens: claudeMessage.usage.input_tokens,

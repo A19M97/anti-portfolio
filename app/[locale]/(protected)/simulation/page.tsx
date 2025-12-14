@@ -352,18 +352,20 @@ export default function SimulationPage() {
       }
 
       const result = await response.json();
-      console.log("[Simulation] AI response received", {
-        type: result.message.type,
-        isCompleted: result.simulation.isCompleted,
+      console.log("[Simulation] Response received", {
+        hasMessage: !!result.message,
+        isCompleted: result.simulation?.isCompleted || result.isCompleted,
       });
 
-      // Add AI response to chat
-      const aiMessage: ChatMessage = {
-        role: "assistant",
-        content: result.message.content,
-        type: result.message.type,
-      };
-      setChatMessages((prev) => [...prev, aiMessage]);
+      // Add AI response to chat only if present (won't be present when simulation completes)
+      if (result.message) {
+        const aiMessage: ChatMessage = {
+          role: "assistant",
+          content: result.message.content,
+          type: result.message.type,
+        };
+        setChatMessages((prev) => [...prev, aiMessage]);
+      }
 
       // Update progress
       setProgress({
