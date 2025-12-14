@@ -401,10 +401,6 @@ export default function SimulationResultsPage() {
               L'AI sta analizzando la tua performance nella simulazione. Questo potrebbe richiedere alcuni secondi.
             </p>
           </div>
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-500">
-            <Sparkles className="w-4 h-4" />
-            <span>Powered by Claude AI</span>
-          </div>
         </motion.div>
       </div>
     );

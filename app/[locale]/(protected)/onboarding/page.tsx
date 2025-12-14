@@ -246,7 +246,7 @@ export default function OnboardingPage() {
               </CardContent>
             </Card>
             {/* Debug Cards ... */}
-            {prompt && (
+            {(prompt && false) && (
               <Card>
                 <CardHeader>
                   <div className="flex items-center space-x-2">
@@ -262,7 +262,7 @@ export default function OnboardingPage() {
               </Card>
             )}
 
-            {rawAnalysis && (
+            {(rawAnalysis && false) && (
               <Card>
                 <CardHeader>
                   <div className="flex items-center space-x-2">
@@ -286,7 +286,7 @@ export default function OnboardingPage() {
               </Card>
             )}
 
-            {claudeResponse && (
+            {(claudeResponse && false) && (
               <Card>
                 <CardHeader>
                   <div className="flex items-center space-x-2">
@@ -302,7 +302,7 @@ export default function OnboardingPage() {
                     <pre className="text-sm whitespace-pre-wrap font-mono">{claudeResponse}</pre>
                   </div>
                   <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                    <strong>{t("debug.size")}</strong> {claudeResponse.length} {t("additionalInfo.characters")}
+                    <strong>{t("debug.size")}</strong> {claudeResponse?.length} {t("additionalInfo.characters")}
                   </div>
                 </CardContent>
               </Card>
